@@ -1,0 +1,684 @@
+<?xml version="1.0" encoding="utf-8"?>
+<search>
+  <entry>
+    <title>butterfly 主题Post Front-matter参数</title>
+    <url>/2020/03/29/20200329-butterfly-%E4%B8%BB%E9%A2%98Post-Front-matter%E5%8F%82%E6%95%B0/</url>
+    <content><![CDATA[<table>
+<thead>
+<tr>
+<th align="left">参数</th>
+<th>解释</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">title</td>
+<td>【必需】文章标题</td>
+</tr>
+<tr>
+<td align="left">date</td>
+<td>【必需】文章创建日期</td>
+</tr>
+<tr>
+<td align="left">updated</td>
+<td>【可选】文章更新日期</td>
+</tr>
+<tr>
+<td align="left">tags</td>
+<td>【可选】文章标签</td>
+</tr>
+<tr>
+<td align="left">categories</td>
+<td>【可选】文章分类</td>
+</tr>
+<tr>
+<td align="left">keywords</td>
+<td>【可选】文章关键字</td>
+</tr>
+<tr>
+<td align="left">description</td>
+<td>【可选】文章描述</td>
+</tr>
+<tr>
+<td align="left">top_img</td>
+<td>【可选】文章顶部图片</td>
+</tr>
+<tr>
+<td align="left">cover</td>
+<td>【可选】文章缩略图(如果没有设置top_img,文章页顶部将显示缩略图，可设为false&#x2F;图片地址&#x2F;留空)</td>
+</tr>
+<tr>
+<td align="left">comments</td>
+<td>【可选】显示文章评论模块(默认 true)</td>
+</tr>
+<tr>
+<td align="left">toc</td>
+<td>【可选】显示文章TOC(默认为设置中toc的enable配置)</td>
+</tr>
+<tr>
+<td align="left">toc_number</td>
+<td>【可选】显示toc_number(默认为设置中toc的number配置)</td>
+</tr>
+<tr>
+<td align="left">toc_style_simple</td>
+<td>【可选】显示 toc 简洁模式</td>
+</tr>
+<tr>
+<td align="left">copyright</td>
+<td>【可选】显示文章版权模块(默认为设置中post_copyright的enable配置)</td>
+</tr>
+<tr>
+<td align="left">copyright_author</td>
+<td>【可选】文章版权模块的文章作者</td>
+</tr>
+<tr>
+<td align="left">copyright_author_href</td>
+<td>【可选】文章版权模块的文章作者链接</td>
+</tr>
+<tr>
+<td align="left">copyright_url</td>
+<td>【可选】文章版权模块的文章连结链接</td>
+</tr>
+<tr>
+<td align="left">copyright_info</td>
+<td>【可选】文章版权模块的版权声明文字</td>
+</tr>
+<tr>
+<td align="left">mathjax</td>
+<td>【可选】显示mathjax(当设置 mathjax 的 per_page: false 时，才需要配置，默认 false )</td>
+</tr>
+<tr>
+<td align="left">katex</td>
+<td>【可选】显示 katex (当设置 katex 的 per_page: false 时，才需要配置，默认 false )</td>
+</tr>
+<tr>
+<td align="left">aplayer</td>
+<td>【可选】在需要的页面加载 aplayer 的 js 和 css,请参考文章下面的音乐 配置</td>
+</tr>
+<tr>
+<td align="left">highlight_shrink</td>
+<td>【可选】配置代码框是否展开(true&#x2F;false)(默认为设置中 highlight_shrink 的配置)</td>
+</tr>
+<tr>
+<td align="left">aside</td>
+<td>【可选】显示侧边栏 (默认 true)</td>
+</tr>
+<tr>
+<td align="left">abcjs</td>
+<td>【可选】加载 abcjs (当设置 abcjs 的 per_page: false 时，才需要配置，默认 false )</td>
+</tr>
+</tbody></table>
+]]></content>
+      <categories>
+        <category>blog搭建</category>
+      </categories>
+      <tags>
+        <tag>教程</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Linux 命令</title>
+    <url>/2024/03/26/linux%E5%91%BD%E4%BB%A4/</url>
+    <content><![CDATA[<blockquote>
+<p>安装英伟达驱动</p>
+</blockquote>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">sudo apt install nvidia-cuda-toolkit</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>查看是否成功安装</p>
+</blockquote>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">nvcc -V</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>查看显卡信息</p>
+</blockquote>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">nvidia-smi</span><br></pre></td></tr></table></figure>
+
+<span id="more"></span>
+
+<blockquote>
+<p>sed -i ‘s@^(deb.*stable main)$@#\1\ndeb <a href="https://mirrors.tuna.tsinghua.edu.cn/termux/termux-packages-24">https://mirrors.tuna.tsinghua.edu.cn/termux/termux-packages-24</a> stable main@’ $PREFIX&#x2F;etc&#x2F;apt&#x2F;sources.list</p>
+<p>pkg update</p>
+<p>pkg install nodejs-lts<br>pkg install git<br>pkg install vim</p>
+<p>mkdir hexo<br>chmod 777 hexo<br>cd hexo</p>
+<p>npm install hexo-cli -g<br>hexo init</p>
+<p>hexo g<br>hexo s </p>
+<p>主题<br>git clone -b master <a href="https://github.com/jerryc127/hexo-theme-butterfly.git">https://github.com/jerryc127/hexo-theme-butterfly.git</a> themes&#x2F;butterfly</p>
+<p>vim themes&#x2F;butterfly&#x2F;_config.yml</p>
+<p>vim编辑器:<br>输入i才能编辑<br>按下esc 再输入:wq保存退出npm install hexo-renderer-pug hexo-renderer-stylus –save</p>
+</blockquote>
+]]></content>
+      <categories>
+        <category>linux</category>
+      </categories>
+      <tags>
+        <tag>linux</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Git命令</title>
+    <url>/2024/03/26/Git%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4/</url>
+    <content><![CDATA[<p>[TOC]</p>
+<h1 id="Git常用命令"><a href="#Git常用命令" class="headerlink" title="Git常用命令"></a>Git常用命令</h1><h2 id="IDEA状态说明"><a href="#IDEA状态说明" class="headerlink" title="IDEA状态说明"></a>IDEA状态说明</h2><ul>
+<li>绿色——已经加入控制暂未提交；</li>
+<li>红色——未加入版本控制；</li>
+<li>蓝色——加入，已提交，有改动；</li>
+<li>白色——加入，已提交，无改动；</li>
+<li>灰色——版本控制已忽略文件；</li>
+<li>黄色——被<strong>git</strong>忽略，不跟踪。</li>
+</ul>
+<span id="more"></span>
+
+<h2 id="仓库"><a href="#仓库" class="headerlink" title="仓库"></a>仓库</h2><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line"># 在当前目录新建一个Git代码库</span><br><span class="line">$ git init</span><br><span class="line"></span><br><span class="line"># 新建一个目录，将其初始化为Git代码库</span><br><span class="line">$ git init [project-name]</span><br><span class="line"></span><br><span class="line"># 下载一个项目和它的整个代码历史</span><br><span class="line">$ git clone [url]</span><br></pre></td></tr></table></figure>
+
+<h2 id="配置"><a href="#配置" class="headerlink" title="配置"></a>配置</h2><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line"># 显示当前的Git配置</span><br><span class="line">$ git config --list</span><br><span class="line"></span><br><span class="line"># 编辑Git配置文件</span><br><span class="line">$ git config -e [--global]</span><br><span class="line"></span><br><span class="line"># 设置提交代码时的用户信息</span><br><span class="line">$ git config [--global] user.name &quot;[name]&quot;</span><br><span class="line">$ git config [--global] user.email &quot;[email address]&quot;</span><br></pre></td></tr></table></figure>
+
+<h2 id="增加、删除文件"><a href="#增加、删除文件" class="headerlink" title="增加、删除文件"></a>增加、删除文件</h2><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line"># 添加指定文件到暂存区</span><br><span class="line">$ git add [file1] [file2] ...</span><br><span class="line"></span><br><span class="line"># 添加指定目录到暂存区，包括子目录</span><br><span class="line">$ git add [dir]</span><br><span class="line"></span><br><span class="line"># 添加当前目录的所有文件到暂存区</span><br><span class="line">$ git add .</span><br><span class="line"></span><br><span class="line"># 添加每个变化前，都会要求确认</span><br><span class="line"># 对于同一个文件的多处变化，可以实现分次提交</span><br><span class="line">$ git add -p</span><br><span class="line"></span><br><span class="line"># 删除工作区文件，并且将这次删除放入暂存区</span><br><span class="line">$ git rm [file1] [file2] ...</span><br><span class="line"></span><br><span class="line"># 停止追踪指定文件，但该文件会保留在工作区</span><br><span class="line">$ git rm --cached [file]</span><br><span class="line"></span><br><span class="line"># 改名文件，并且将这个改名放入暂存区</span><br><span class="line">$ git mv [file-original] [file-renamed]</span><br></pre></td></tr></table></figure>
+
+<h2 id="代码提交"><a href="#代码提交" class="headerlink" title="代码提交"></a>代码提交</h2><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line"># 提交暂存区到仓库区</span><br><span class="line">$ git commit -m [message]</span><br><span class="line"></span><br><span class="line"># 提交暂存区的指定文件到仓库区</span><br><span class="line">$ git commit [file1] [file2] ... -m [message]</span><br><span class="line"></span><br><span class="line"># 提交工作区自上次commit之后的变化，直接到仓库区</span><br><span class="line">$ git commit -a</span><br><span class="line"></span><br><span class="line"># 提交时显示所有diff信息</span><br><span class="line">$ git commit -v</span><br><span class="line"></span><br><span class="line"># 使用一次新的commit，替代上一次提交</span><br><span class="line"># 如果代码没有任何新变化，则用来改写上一次commit的提交信息</span><br><span class="line">$ git commit --amend -m [message]</span><br><span class="line"></span><br><span class="line"># 重做上一次commit，并包括指定文件的新变化</span><br><span class="line">$ git commit --amend [file1] [file2] ...</span><br></pre></td></tr></table></figure>
+
+<h2 id="分支"><a href="#分支" class="headerlink" title="分支"></a>分支</h2><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line"># 列出所有本地分支</span><br><span class="line">$ git branch</span><br><span class="line"></span><br><span class="line"># 列出所有远程分支</span><br><span class="line">$ git branch -r</span><br><span class="line"></span><br><span class="line"># 列出所有本地分支和远程分支</span><br><span class="line">$ git branch -a</span><br><span class="line"></span><br><span class="line"># 新建一个分支，但依然停留在当前分支</span><br><span class="line">$ git branch [branch-name]</span><br><span class="line"></span><br><span class="line"># 新建一个分支，并切换到该分支</span><br><span class="line">$ git checkout -b [branch]</span><br><span class="line"></span><br><span class="line"># 新建一个分支，指向指定commit</span><br><span class="line">$ git branch [branch] [commit]</span><br><span class="line"></span><br><span class="line"># 新建一个分支，与指定的远程分支建立追踪关系</span><br><span class="line">$ git branch --track [branch] [remote-branch]</span><br><span class="line"></span><br><span class="line"># 切换到指定分支，并更新工作区</span><br><span class="line">$ git checkout [branch-name]</span><br><span class="line"></span><br><span class="line"># 切换到上一个分支</span><br><span class="line">$ git checkout -</span><br><span class="line"></span><br><span class="line"># 建立追踪关系，在现有分支与指定的远程分支之间</span><br><span class="line">$ git branch --set-upstream [branch] [remote-branch]</span><br><span class="line"></span><br><span class="line"># 合并指定分支到当前分支</span><br><span class="line">$ git merge [branch]</span><br><span class="line"></span><br><span class="line"># 选择一个commit，合并进当前分支</span><br><span class="line">$ git cherry-pick [commit]</span><br><span class="line"></span><br><span class="line"># 删除分支</span><br><span class="line">$ git branch -d [branch-name]</span><br><span class="line"></span><br><span class="line"># 删除远程分支</span><br><span class="line">$ git push origin --delete [branch-name]</span><br><span class="line">$ git branch -dr [remote/branch]</span><br></pre></td></tr></table></figure>
+
+<h2 id="标签"><a href="#标签" class="headerlink" title="标签"></a>标签</h2><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line"># 列出所有tag</span><br><span class="line">$ git tag</span><br><span class="line"></span><br><span class="line"># 新建一个tag在当前commit</span><br><span class="line">$ git tag [tag]</span><br><span class="line"></span><br><span class="line"># 新建一个tag在指定commit</span><br><span class="line">$ git tag [tag] [commit]</span><br><span class="line"></span><br><span class="line"># 删除本地tag</span><br><span class="line">$ git tag -d [tag]</span><br><span class="line"></span><br><span class="line"># 删除远程tag</span><br><span class="line">$ git push origin :refs/tags/[tagName]</span><br><span class="line"></span><br><span class="line"># 查看tag信息</span><br><span class="line">$ git show [tag]</span><br><span class="line"></span><br><span class="line"># 提交指定tag</span><br><span class="line">$ git push [remote] [tag]</span><br><span class="line"></span><br><span class="line"># 提交所有tag</span><br><span class="line">$ git push [remote] --tags</span><br><span class="line"></span><br><span class="line"># 新建一个分支，指向某个tag</span><br><span class="line">$ git checkout -b [branch] [tag]</span><br></pre></td></tr></table></figure>
+
+<h2 id="查看信息"><a href="#查看信息" class="headerlink" title="查看信息"></a>查看信息</h2><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line"># 显示有变更的文件</span><br><span class="line">$ git status</span><br><span class="line"></span><br><span class="line"># 显示当前分支的版本历史</span><br><span class="line">$ git log</span><br><span class="line"></span><br><span class="line"># 显示commit历史，以及每次commit发生变更的文件</span><br><span class="line">$ git log --stat</span><br><span class="line"></span><br><span class="line"># 搜索提交历史，根据关键词</span><br><span class="line">$ git log -S [keyword]</span><br><span class="line"></span><br><span class="line"># 显示某个commit之后的所有变动，每个commit占据一行</span><br><span class="line">$ git log [tag] HEAD --pretty=format:%s</span><br><span class="line"></span><br><span class="line"># 显示某个commit之后的所有变动，其&quot;提交说明&quot;必须符合搜索条件</span><br><span class="line">$ git log [tag] HEAD --grep feature</span><br><span class="line"></span><br><span class="line"># 显示某个文件的版本历史，包括文件改名</span><br><span class="line">$ git log --follow [file]</span><br><span class="line">$ git whatchanged [file]</span><br><span class="line"></span><br><span class="line"># 显示指定文件相关的每一次diff</span><br><span class="line">$ git log -p [file]</span><br><span class="line"></span><br><span class="line"># 显示过去5次提交</span><br><span class="line">$ git log -5 --pretty --oneline</span><br><span class="line"></span><br><span class="line"># 显示所有提交过的用户，按提交次数排序</span><br><span class="line">$ git shortlog -sn</span><br><span class="line"></span><br><span class="line"># 显示指定文件是什么人在什么时间修改过</span><br><span class="line">$ git blame [file]</span><br><span class="line"></span><br><span class="line"># 显示暂存区和工作区的差异</span><br><span class="line">$ git diff</span><br><span class="line"></span><br><span class="line"># 显示暂存区和上一个commit的差异</span><br><span class="line">$ git diff --cached [file]</span><br><span class="line"></span><br><span class="line"># 显示工作区与当前分支最新commit之间的差异</span><br><span class="line">$ git diff HEAD</span><br><span class="line"></span><br><span class="line"># 显示两次提交之间的差异</span><br><span class="line">$ git diff [first-branch]...[second-branch]</span><br><span class="line"></span><br><span class="line"># 显示今天你写了多少行代码</span><br><span class="line">$ git diff --shortstat &quot;@&#123;0 day ago&#125;&quot;</span><br><span class="line"></span><br><span class="line"># 显示某次提交的元数据和内容变化</span><br><span class="line">$ git show [commit]</span><br><span class="line"></span><br><span class="line"># 显示某次提交发生变化的文件</span><br><span class="line">$ git show --name-only [commit]</span><br><span class="line"></span><br><span class="line"># 显示某次提交时，某个文件的内容</span><br><span class="line">$ git show [commit]:[filename]</span><br><span class="line"></span><br><span class="line"># 显示当前分支的最近几次提交</span><br><span class="line">$ git reflog</span><br></pre></td></tr></table></figure>
+
+<h2 id="远程同步"><a href="#远程同步" class="headerlink" title="远程同步"></a>远程同步</h2><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line"># 下载远程仓库的所有变动</span><br><span class="line">$ git fetch [remote]</span><br><span class="line"></span><br><span class="line"># 显示所有远程仓库</span><br><span class="line">$ git remote -v</span><br><span class="line"></span><br><span class="line"># 显示某个远程仓库的信息</span><br><span class="line">$ git remote show [remote]</span><br><span class="line"></span><br><span class="line"># 增加一个新的远程仓库，并命名</span><br><span class="line">$ git remote add [shortname] [url]</span><br><span class="line"></span><br><span class="line"># 取回远程仓库的变化，并与本地分支合并</span><br><span class="line">$ git pull [remote] [branch]</span><br><span class="line"></span><br><span class="line"># 上传本地指定分支到远程仓库</span><br><span class="line">$ git push [remote] [branch]</span><br><span class="line"></span><br><span class="line"># 强行推送当前分支到远程仓库，即使有冲突</span><br><span class="line">$ git push [remote] --force</span><br><span class="line"></span><br><span class="line"># 推送所有分支到远程仓库</span><br><span class="line">$ git push [remote] --all</span><br></pre></td></tr></table></figure>
+
+<h2 id="撤销"><a href="#撤销" class="headerlink" title="撤销"></a>撤销</h2><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line"># 恢复暂存区的指定文件到工作区</span><br><span class="line">$ git checkout [file]</span><br><span class="line"></span><br><span class="line"># 恢复某个commit的指定文件到暂存区和工作区</span><br><span class="line">$ git checkout [commit] [file]</span><br><span class="line"></span><br><span class="line"># 恢复暂存区的所有文件到工作区</span><br><span class="line">$ git checkout .</span><br><span class="line"></span><br><span class="line"># 重置暂存区的指定文件，与上一次commit保持一致，但工作区不变</span><br><span class="line">$ git reset [file]</span><br><span class="line"></span><br><span class="line"># 重置暂存区与工作区，与上一次commit保持一致</span><br><span class="line">$ git reset --hard</span><br><span class="line"></span><br><span class="line"># 重置当前分支的指针为指定commit，同时重置暂存区，但工作区不变</span><br><span class="line">$ git reset [commit]</span><br><span class="line"></span><br><span class="line"># 重置当前分支的HEAD为指定commit，同时重置暂存区和工作区，与指定commit一致</span><br><span class="line">$ git reset --hard [commit]</span><br><span class="line"></span><br><span class="line"># 重置当前HEAD为指定commit，但保持暂存区和工作区不变</span><br><span class="line">$ git reset --keep [commit]</span><br><span class="line"></span><br><span class="line"># 新建一个commit，用来撤销指定commit</span><br><span class="line"># 后者的所有变化都将被前者抵消，并且应用到当前分支</span><br><span class="line">$ git revert [commit]</span><br><span class="line"></span><br><span class="line">暂时将未提交的变化移除，稍后再移入</span><br><span class="line">$ git stash</span><br><span class="line">$ git stash pop</span><br></pre></td></tr></table></figure>
+
+<h2 id="其他"><a href="#其他" class="headerlink" title="其他"></a>其他</h2><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line"># 生成一个可供发布的压缩包</span><br><span class="line">$ git archive</span><br></pre></td></tr></table></figure>
+
+
+
+
+
+]]></content>
+      <categories>
+        <category>git</category>
+      </categories>
+      <tags>
+        <tag>git</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>计算机网络</title>
+    <url>/2024/03/26/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/</url>
+    <content><![CDATA[<h2 id="计算机网络涉及方面"><a href="#计算机网络涉及方面" class="headerlink" title="计算机网络涉及方面"></a>计算机网络涉及方面</h2><ul>
+<li><p>通信和计算机两个领域</p>
+</li>
+<li><p>关系</p>
+<ol>
+<li>通信网络为计算机之间的数据传递和交换提供了必要手段</li>
+<li>数字计算机技术的发展渗透到通信技术中，又提高了通信网络的各种性能</li>
+</ol>
+</li>
+</ul>
+<span id="more"></span>
+
+<h2 id="计算机网络的发展过程"><a href="#计算机网络的发展过程" class="headerlink" title="计算机网络的发展过程"></a>计算机网络的发展过程</h2><ul>
+<li>第一阶段：以单个计算机为中心的远程联机系统，构成面向终端的计算机网络</li>
+<li>第二阶段：多台计算机通过通信线路互联的计算机网络</li>
+<li>第三阶段：具有统一的计算机网络体系结构、遵循国际通信标准化协议的计算机网络</li>
+<li>第四阶段：Internet发展和普及阶。计算机网络向互连、高速、智能化方向发展，并获得广泛应用。</li>
+</ul>
+<h2 id="计算机网络的概念与分类"><a href="#计算机网络的概念与分类" class="headerlink" title="计算机网络的概念与分类"></a>计算机网络的概念与分类</h2><ul>
+<li><strong>概念</strong><ul>
+<li>计算机网络是通过通信设施（通信网络），将地理上分散的具有自治功能的多个计算机互连起来，进行信息交换，实现资源共享、互操作和协同工作的系统</li>
+</ul>
+</li>
+<li><strong>分类</strong><ol>
+<li><strong>按地理位置分类</strong><ul>
+<li>广域网（WAN）：范围非常大，可跨越国界、洲界甚至全球。覆盖范围通常是几十到几千公里的区域。</li>
+<li>城域网（MAN）：规模局限在一座城市范围内的区域性网络，一般的覆盖范围为10~100 Km</li>
+<li>局域网（LAN）：一般在几十米到几千米的范围，一个局域网可以容纳机台甚至几千台计算机。</li>
+<li>个人区域网（PAN）：用无线电或红外线代替传统的有线电缆，实现个人信息终端的智能化互联，组建个人化的信息网络，范围为10 m左右</li>
+</ul>
+</li>
+<li><strong>按网络拓扑结构分类</strong><ul>
+<li>星型网络结构</li>
+<li>环形网络结构</li>
+<li>总线型网络结构</li>
+</ul>
+</li>
+<li><strong>按传输介质分类</strong><ul>
+<li>有线网络：同轴电缆、光纤、双绞线；传输距离长，传输速率高，抗干扰性强。</li>
+<li>无线网络：微波、红外线、无线电等；联网方式灵活方便</li>
+</ul>
+</li>
+<li><strong>按交换技术分类</strong><ul>
+<li>电路交换网络：建立连接、传输数据、释放连接三个阶段，延迟小，线路利用率低，不便于差错控制，不能充分利用线路容量，无法应对互联网中广泛存在的“突发”流量</li>
+<li>报文交换网络：用户数据加上源地址、目的地址、校验码等信息；可以较好地利用线路容量，实现一对多，多对一的访问，增加了资源开销，增加缓冲延迟，需要额外的控制机制保证多个报文不会乱序，缓冲区难以管理，因为报文的大小不确定。</li>
+<li>分组交换网络：将数据分成固定长度的数据块，数据块中加上目的地址，源地址等信息组成分组（包）；缓冲易于管理，包的平均延迟更小，更易于标准化</li>
+</ul>
+</li>
+</ol>
+</li>
+</ul>
+<h2 id="计算机网络的组成"><a href="#计算机网络的组成" class="headerlink" title="计算机网络的组成"></a>计算机网络的组成</h2><ol>
+<li><strong>通信子网</strong>（网络核心）<ul>
+<li>由互联网端系统的分组交换设备和通信链路构成的网状网络</li>
+<li>功能：路由：路由算法表；转发：交换（三种交换）</li>
+<li>实现基本数据的传输，由大量的网络及路由器组成</li>
+</ul>
+</li>
+<li><strong>资源子网</strong>（网络边缘）<ul>
+<li>端系统：位于互联网边缘与互联网相连的计算机和其他设备。</li>
+<li>端系统由各类主机构成：桌面计算机、服务器、其他智能终端设备</li>
+</ul>
+</li>
+</ol>
+<h2 id="计算机网络体系结构和参考模型"><a href="#计算机网络体系结构和参考模型" class="headerlink" title="计算机网络体系结构和参考模型"></a>计算机网络体系结构和参考模型</h2><ol>
+<li><strong>层次划分原则</strong><ul>
+<li>每层的功能应该是明确的，并且是相互独立的。</li>
+<li>层间接口必须清晰，跨越接口的信息量应尽可能少。</li>
+<li>层数应适中。层数少导致每层协议复杂；层数多使网路i体系结构复杂。</li>
+</ul>
+</li>
+<li><strong>各层完成的主要功能</strong><ul>
+<li>差错控制：使相应层次对等方的通信更可靠</li>
+<li>流量控制：发送方的发送速率必须使接收方来得及接收，不要太快</li>
+<li>分段和重装：发送方将要发送的数据块划分为更小的单位，在接收端将其还原</li>
+<li>复用和分用：发送方几个高层会话复用一条低层的连接，在接收端再进行分用</li>
+<li>建立连接和释放：交换数据前先建立一条逻辑连接，数据传送结束后释放连接</li>
+</ul>
+</li>
+<li><strong>网络协议</strong><ul>
+<li>设计目的：为进行网络中数据交换而建立的规则、标准或规定，通信双方需要共同遵守，互相理解。可靠性、资源分配、拥塞问题，自适应性，安全问题。</li>
+<li>三要素<ol>
+<li><strong>语法：</strong>规定数据传输的格式；协议结构、信号数量或级别。</li>
+<li><strong>语义：</strong>规定要完成的功能；差错处理，控制信息</li>
+<li><strong>定时：</strong>速度匹配、排序</li>
+</ol>
+</li>
+</ul>
+</li>
+<li><strong>服务原语</strong><ul>
+<li><strong>定义：</strong>服务用户和服务i供者之间要进行交互，交互信息称为服务原语</li>
+<li>组成：服务动作、原语类型</li>
+<li><strong>基本服务原语：</strong>请求、指示、响应、确认</li>
+<li>两种服务：面向连接、无连接</li>
+<li>面向连接：连接请求→接收响应→请求数据→应答→请求断开→断开连接</li>
+</ul>
+</li>
+<li><strong>协议数据单元PDU</strong><ul>
+<li>OSI参考模型把对等层之间传送的数据单位成为该层的协议数据单元<strong>PDU</strong></li>
+<li>任何两个同样的层次把PDU通过水平虚线直接传送给对方。这就是所谓对等层之间的通信。</li>
+</ul>
+</li>
+<li><strong>服务数据单元SDU</strong><ul>
+<li>OSI把层与层之间交换的数据单位成为服务数据单元</li>
+<li>可以是多个SDU合成一个PDU，也可以是一个SDU划分为多个PDU</li>
+</ul>
+</li>
+<li><strong>接口数据单元IDU</strong><ul>
+<li>同一系统的相邻实体的一次交互中，经过层间接口的数据单元</li>
+</ul>
+</li>
+<li><strong>协议与服务</strong><ul>
+<li>协议：保证了能够向上一层提供服务；对上面的服务用户是透明的；是“水平的”</li>
+<li>服务：上层使用服务原语获得下层提供的服务；上面的服务用户只能看见服务，无法看见下面的协议；是垂直的。</li>
+</ul>
+</li>
+<li><strong>OSI参考模型</strong><ul>
+<li><strong>物理层</strong></li>
+<li><strong>数据链路层</strong></li>
+<li><strong>网络层</strong></li>
+<li><strong>会话层</strong></li>
+<li><strong>表示层</strong></li>
+<li><strong>应用层</strong></li>
+</ul>
+</li>
+<li><strong>TCP&#x2F;IP参考模型</strong></li>
+</ol>
+<ul>
+<li><strong>网络接口层</strong></li>
+<li><strong>网络层</strong></li>
+<li><strong>传输层</strong></li>
+<li><strong>应用层</strong></li>
+</ul>
+<h2 id="物理层（比特）"><a href="#物理层（比特）" class="headerlink" title="物理层（比特）"></a>物理层（比特）</h2><ol>
+<li><strong>物理层特性</strong><ul>
+<li><strong>机械特性</strong></li>
+<li><strong>电气特性</strong></li>
+<li><strong>功能特性</strong></li>
+<li><strong>过程特性</strong></li>
+</ul>
+</li>
+<li><strong>基本调制技术</strong><ul>
+<li>振幅调制ASK</li>
+<li>频率调制FSK</li>
+<li>相位调制PSK</li>
+<li>多进制调制MASK</li>
+</ul>
+</li>
+<li><strong>主要功能</strong><ul>
+<li>在数据链路层实体之间提供激活、维持和释放用于传输比特的物理连接方法。</li>
+</ul>
+</li>
+</ol>
+<h2 id="数据链路层（帧）"><a href="#数据链路层（帧）" class="headerlink" title="数据链路层（帧）"></a>数据链路层（帧）</h2><ol>
+<li><p><strong>主要功能</strong></p>
+<ul>
+<li>链路管理</li>
+<li>帧同步</li>
+<li>流量控制</li>
+<li>差错控制</li>
+<li>透明传输</li>
+<li>寻址</li>
+</ul>
+</li>
+<li><p><strong>数据链路层的服务功能</strong></p>
+<ul>
+<li>面向连接确认服务</li>
+<li>无连接确认服务</li>
+<li>无连接不确认服务</li>
+</ul>
+</li>
+<li><p><strong>成帧方法</strong></p>
+<ul>
+<li>字符计数法</li>
+<li>带字符填充的首尾字符定界法</li>
+<li>带位填充的首尾字符定界法</li>
+<li>物理层编码</li>
+</ul>
+</li>
+<li><p><strong>PPP协议组成部分</strong></p>
+<ul>
+<li>将IP数据报封装到串行链路的方法</li>
+<li>链路控制协议LCP</li>
+<li>网络控制协议NCP</li>
+</ul>
+</li>
+<li><p><strong>PPP协议的特点及适用情况</strong></p>
+<p>Point-to-Point Protocol（PPP）是一种在计算机网络中广泛使用的数据链路层协议。它有以下主要特点：</p>
+<ol>
+<li><p><strong>点对点连接：</strong> PPP 是一种用于建立点对点连接的协议，通常在两个网络设备之间建立直接连接。这种连接可以是通过物理介质（如串行线路）或逻辑链路（如虚拟专用网络）实现的。</p>
+</li>
+<li><p><strong>支持多种网络层协议：</strong> PPP 不仅支持 IP 协议，还能够在其上运行其他网络层协议，如 IPX（Novell NetWare）和 IPv6。这使得 PPP 在多协议环境中更加灵活。</p>
+</li>
+<li><p><strong>认证和身份验证：</strong> PPP 提供了身份验证的机制，允许用户或设备在建立连接时进行身份验证。常见的认证方式包括用户名和密码、基于CHAP（Challenge Handshake Authentication Protocol）的认证等。</p>
+</li>
+<li><p><strong>可靠的帧同步：</strong> PPP 使用帧同步来确保可靠的数据传输。它在数据帧中包含了错误检测和纠错的机制，以提高传输的可靠性。</p>
+</li>
+<li><p><strong>支持网络层协议的协商：</strong> PPP 具有协商能力，可以协商并选择要在连接上使用的网络层协议。这种灵活性使得 PPP 能够适应不同的网络环境。</p>
+</li>
+</ol>
+<p>PPP 通常用于以下情况：</p>
+<ul>
+<li><p><strong>拨号连接：</strong> 在拨号连接中，PPP 通过拨号线路（例如调制解调器）实现两个设备之间的直接点对点连接，通常用于用户拨号上网等场景。</p>
+</li>
+<li><p><strong>广域网连接：</strong> PPP 可以用于建立广域网（WAN）连接，例如在企业网络中连接分支机构或连接到互联网服务提供商（ISP）的辅助线路。</p>
+</li>
+<li><p><strong>虚拟专用网络（VPN）：</strong> PPP 可以作为 VPN 连接的一部分，提供安全的点对点连接，使得远程用户能够通过公共网络访问私有网络资源。</p>
+</li>
+</ul>
+</li>
+</ol>
+<h2 id="局域网（LAN）"><a href="#局域网（LAN）" class="headerlink" title="局域网（LAN）"></a>局域网（LAN）</h2><ol>
+<li><p><strong>技术因素</strong></p>
+<ul>
+<li>网络拓扑结构<ol>
+<li>总线型拓扑结构</li>
+<li>环形拓扑结构</li>
+<li>星型拓扑结构</li>
+</ol>
+</li>
+<li>传输介质<ul>
+<li>双绞线、同轴电缆、光纤</li>
+</ul>
+</li>
+<li>介质访问控制方法<ol>
+<li>带冲突检测的载波监听多路访问方法CSMA&#x2F;CD</li>
+<li>令牌总线方法</li>
+<li>令牌环方法</li>
+</ol>
+</li>
+</ul>
+</li>
+<li><p><strong>局域网参考模型</strong></p>
+<p>分为两个子层</p>
+<ol>
+<li>逻辑链路控制子层LLC</li>
+<li>介质访问子层MAC</li>
+</ol>
+</li>
+<li><p><strong>逻辑链路控制子层LLC主要功能</strong></p>
+<p>涉及两个站点间链路级协议数据单元的传输，不必有中间转换点的加入。</p>
+<ul>
+<li>提供一个或多个服务访问点</li>
+<li>发送数据时将数据组装成带有地址和差错检测段的帧</li>
+<li>接收数据时拆帧，执行地址识别和差错检测</li>
+<li>管理链路上的通信</li>
+</ul>
+</li>
+<li><p><strong>介质访问子层MAC</strong></p>
+<ol>
+<li><p>类型</p>
+<ul>
+<li><p>点到点链路（PPP协议、HDLC协议）</p>
+</li>
+<li><p>广播链路</p>
+</li>
+</ul>
+</li>
+</ol>
+</li>
+<li></li>
+</ol>
+]]></content>
+      <categories>
+        <category>课程</category>
+      </categories>
+      <tags>
+        <tag>课程</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>软件工程</title>
+    <url>/2024/03/26/%E8%BD%AF%E4%BB%B6%E5%B7%A5%E7%A8%8B%E6%A6%82%E5%BF%B5%E7%9F%A5%E8%AF%86/</url>
+    <content><![CDATA[<h1 id="一、软件工程的概念"><a href="#一、软件工程的概念" class="headerlink" title="一、软件工程的概念"></a>一、软件工程的概念</h1><ul>
+<li><p>1把系统的、规范的、可度量的途径应用于软件开发、运行和维护过程，也就是把工程应用于软件；</p>
+</li>
+<li><p>2研究1中提到的途径</p>
+</li>
+</ul>
+<h1 id="二、软件危机的概念"><a href="#二、软件危机的概念" class="headerlink" title="二、软件危机的概念"></a>二、软件危机的概念</h1><p>软件危机是指计算机软件的开发和维护过程中遇到一系列严重的问题</p>
+<span id="more"></span>
+
+<h1 id="三、软件过程"><a href="#三、软件过程" class="headerlink" title="三、软件过程"></a>三、软件过程</h1><h3 id="1-瀑布模型"><a href="#1-瀑布模型" class="headerlink" title="1.瀑布模型"></a>1.瀑布模型</h3><ul>
+<li><p>名称：线性模型</p>
+</li>
+<li><p>示意图：可行性分析➡️需求分析➡️设计➡️编码➡️测试➡️维护➡️软件废弃</p>
+</li>
+<li><p>目标：系统100%正确</p>
+</li>
+<li><p>适用场景： 适用于需求比较稳定、项目较小且技术风险较低的情况。</p>
+</li>
+</ul>
+<h3 id="2-原型模型"><a href="#2-原型模型" class="headerlink" title="2.原型模型"></a>2.原型模型</h3><ul>
+<li><p>名称：原型模型</p>
+</li>
+<li><p>示意图：听取用户意见➡️建造&#x2F;修改原型⬇️</p>
+</li>
+</ul>
+<p>​							⬆️⬅️⬅️⬅️⬅️⬅️用户测试运行原理</p>
+<p><strong>注意</strong>：第一次建造原型，之后一直修改原型</p>
+<ul>
+<li><p>目标：需求不明确</p>
+</li>
+<li><p>适用场景：需求不明确或变化频繁、用户参与度高</p>
+</li>
+</ul>
+<h3 id="3-增量模型"><a href="#3-增量模型" class="headerlink" title="3.增量模型"></a>3.增量模型</h3><ul>
+<li><p>名称：线性增量模型</p>
+</li>
+<li><p>示意图：version 1.0  分析➡️设计➡️编码➡️测试➡️交付</p>
+</li>
+</ul>
+<p>​				version 2.0  分析➡️设计➡️编码➡️测试➡️交付</p>
+<p>​				version 3.0  分析➡️设计➡️编码➡️测试➡️交付</p>
+<p>​				……</p>
+<ul>
+<li>适用领域：产品开发（开发商决定需求）、100%正确、</li>
+</ul>
+<h3 id="4-螺旋模型"><a href="#4-螺旋模型" class="headerlink" title="4.螺旋模型"></a>4.螺旋模型</h3><ul>
+<li><p>名称：螺旋模型</p>
+</li>
+<li><p>示意图：课本P21</p>
+</li>
+<li><p>适用场景：项目开发（消费者决定需求）</p>
+</li>
+</ul>
+<h3 id="5-CMM"><a href="#5-CMM" class="headerlink" title="5. CMM"></a>5. CMM</h3><ul>
+<li><p>名称：能力成熟度模型</p>
+</li>
+<li><p>用于衡量软降过程能力的事实上的标准，同时也是目前软件改进过程最好的参考标准</p>
+</li>
+<li><p>等级：</p>
+<p>​     1.初始级					纪律化↩️</p>
+</li>
+</ul>
+<p>​			2.可重复级				标准化↩️</p>
+<p>​			3.已定义级				数量化↩️</p>
+<p>​			4.已管理级				企业化↩️</p>
+<p>​			5.持续优化级</p>
+<h3 id="6-极限编程"><a href="#6-极限编程" class="headerlink" title="6.极限编程"></a>6.极限编程</h3><ul>
+<li><p>极限编程是敏捷过程最富盛名的一个</p>
+</li>
+<li><p>极限编程是一种敏捷软件开发的方法，强调灵活性、迭代开发和快速交付。它的核心原则包括快速反馈、简单性、可靠性、可变性和高度的用户参与。</p>
+</li>
+<li><p>开发实践</p>
+</li>
+</ul>
+<p>​		1.客户作为开发团队的成员</p>
+<p>​		2.结对编程（两名程序员在同一台电脑上共同编写解决同一个问题的程序代码）</p>
+<p>​		3.使用隐喻（可以将隐喻看作把整个系统联系在一起的全局视图，描述系统如何运作，以及用何种方式把新功能加入系统中）</p>
+<p>……课本P27</p>
+<h1 id="四、可行性分析"><a href="#四、可行性分析" class="headerlink" title="四、可行性分析"></a>四、可行性分析</h1><h3 id="1-概念"><a href="#1-概念" class="headerlink" title="1.概念"></a>1.概念</h3><ul>
+<li>可行性分析是在项目启动阶段进行的一项评估，用于判断计划中的项目是否值得进行。这项分析旨在确定项目的经济、技术和操作上的可行性。</li>
+</ul>
+<h3 id="2-主要方面"><a href="#2-主要方面" class="headerlink" title="2.主要方面"></a>2.主要方面</h3><ul>
+<li>技术可行性<ol>
+<li><strong>技术要求</strong>： 确定项目所需的技术和技能，以及这些技术在组织中是否可行。</li>
+<li><strong>技术可行性评估</strong>： 评估组织是否有能力实施项目中所需的技术。</li>
+</ol>
+</li>
+<li>经济可行性<ol>
+<li><strong>成本估算：</strong> 评估项目所需的资源，包括人力、硬件、软件、培训等方面的成本。</li>
+<li><strong>效益分析：</strong> 比较项目的成本和预期收益，确保项目在经济上可行。</li>
+</ol>
+</li>
+<li>操作可行性<ol>
+<li><strong>组织结构：</strong> 了解组织内部结构和文化，以确保项目的操作不会与组织的运作方式发生冲突。</li>
+<li><strong>操作风险：</strong> 评估项目实施过程中可能面临的操作风险，并提出相应的应对措施。</li>
+</ol>
+</li>
+<li>社会可行性</li>
+</ul>
+<h3 id="3-数据流图DFD"><a href="#3-数据流图DFD" class="headerlink" title="3.数据流图DFD"></a>3.数据流图DFD</h3><ul>
+<li><strong>数据流图（Data Flow Diagram，DFD）</strong>是一种图形化的工具，用于表示系统中的数据流动、处理和存储。数据流图通常由以下几个部分构成：</li>
+</ul>
+<ol>
+<li><strong>流程（Process）：</strong> 表示系统中执行的操作、转换或处理。通常用<strong>圆角矩形</strong>表示，并用名称标识。</li>
+<li><strong>数据流（Data Flow）：</strong> 表示在系统中流动的数据。通常用<strong>箭头</strong>表示，箭头的方向表示数据的流动方向。</li>
+<li><strong>数据存储（Data Store）：</strong> 表示系统中的数据存储位置，如数据库、文件或其他数据存储设备。通常用<strong>长方形</strong>表示。</li>
+<li><strong>外部实体（External Entity）：</strong> 表示系统的输入或输出源，即与系统交互的外部实体。通常用<strong>矩形</strong>表示，并在矩形上方或下方标明外部实体的名称。</li>
+</ol>
+<ul>
+<li>附加符号的基本含义：课本<strong>P41</strong></li>
+</ul>
+<h1 id="五、总体设计"><a href="#五、总体设计" class="headerlink" title="五、总体设计"></a>五、总体设计</h1><h3 id="1-概要设计"><a href="#1-概要设计" class="headerlink" title="1.概要设计"></a>1.概要设计</h3><p> <strong>概要设计的任务：</strong></p>
+<p>​	概要设计是软件开发过程中的一个阶段，其任务是从需求分析的基础上，进一步明确系统的整体结构和组织，包括各个模块之间的关系、模块的功能、接口定义等。概要设计通常包括以下任务：</p>
+<ol>
+<li><strong>系统结构设计：</strong> 定义系统的整体结构，包括模块之间的关系、层次结构等。</li>
+<li><strong>模块划分：</strong> 将系统划分为若干模块，每个模块负责一个或一组相关的功能。</li>
+<li><strong>接口设计：</strong> 定义模块之间的接口，包括输入输出参数、数据结构等。</li>
+<li><strong>数据结构设计：</strong> 设计系统中需要使用的数据结构，包括数据库表结构、文件格式等。</li>
+<li><strong>算法设计：</strong> 定义系统中需要使用的算法，包括各个模块内部的算法和模块之间的协作算法。</li>
+<li><strong>错误处理和异常处理设计：</strong> 设计系统对于错误和异常的处理机制，确保系统的稳定性和可靠性。</li>
+<li><strong>性能设计：</strong> 考虑系统的性能需求，设计合适的数据结构和算法以满足性能要求。</li>
+<li><strong>安全性设计：</strong> 考虑系统的安全性需求，设计防范措施以防范潜在的安全威胁。</li>
+</ol>
+<h3 id="2-模块"><a href="#2-模块" class="headerlink" title="2.模块"></a>2.模块</h3><ul>
+<li><strong>概念</strong></li>
+</ul>
+<p>​		在软件工程中，模块是指一个独立的、可以被设计、实现和测试的软件单元。模块化是软件开发的重要原则，其核心思想是将系统划分为若干个独立的、相对独立的模块，每个模块负责特定的功能，模块之间通过定义好的接口进行通信。</p>
+<h3 id="3-耦合、内聚"><a href="#3-耦合、内聚" class="headerlink" title="3.耦合、内聚"></a>3.耦合、内聚</h3><ul>
+<li>耦合是对一个软件结构内不同模块之间互联程度的度量。耦合强度取决于模块间接口的复杂程度。</li>
+<li>内聚标志着一个模块内各个元素彼此结合的紧密程度，它是信息隐藏和局部化概念的自然扩展。</li>
+</ul>
+<p><strong>其他内容见课本P97~99</strong></p>
+<h1 id="六、变换分析、事务分析"><a href="#六、变换分析、事务分析" class="headerlink" title="六、变换分析、事务分析"></a>六、变换分析、事务分析</h1><h3 id="1-生成模块图"><a href="#1-生成模块图" class="headerlink" title="1.生成模块图"></a>1.生成模块图</h3><h4 id="1-变换分析：课本105"><a href="#1-变换分析：课本105" class="headerlink" title="1. 变换分析：课本105"></a>1. 变换分析：课本105</h4><ol>
+<li><strong>标识数据流图中的处理（Process）：</strong><ul>
+<li>识别数据流图中的各个处理（圆角矩形），这些代表系统中的各个功能模块。</li>
+</ul>
+</li>
+<li><strong>将处理转化为模块：</strong><ul>
+<li>每个处理可以被看作一个模块，其中包含执行特定功能的代码。</li>
+</ul>
+</li>
+<li><strong>识别模块间的数据流：</strong><ul>
+<li>标识数据流图中的数据流（箭头），这些代表模块间传递的数据。</li>
+</ul>
+</li>
+</ol>
+<h4 id="2-事务分析：课本111"><a href="#2-事务分析：课本111" class="headerlink" title="2. 事务分析：课本111"></a>2. 事务分析：课本111</h4><ol>
+<li><strong>识别交易或事件：</strong><ul>
+<li>从需求分析中，识别不同的交易或事件，即系统需要处理的不同类型的请求或任务。</li>
+</ul>
+</li>
+<li><strong>将交易映射到模块：</strong><ul>
+<li>将每个交易或事件映射到一个或多个模块，这些模块负责处理特定类型的交易。</li>
+</ul>
+</li>
+<li><strong>确定事务的数据流路径：</strong><ul>
+<li>确定每个交易或事件的数据流路径，即数据从哪里来、经过哪些模块处理，最终到达何处。</li>
+</ul>
+</li>
+</ol>
+<h4 id="3-创建模块图："><a href="#3-创建模块图：" class="headerlink" title="3. 创建模块图："></a>3. 创建模块图：</h4><ol>
+<li><strong>标识模块：</strong><ul>
+<li>使用方框表示每个模块，标明模块的名称。</li>
+</ul>
+</li>
+<li><strong>标识数据流：</strong><ul>
+<li>使用箭头表示模块之间的数据流，箭头的方向表示数据流的方向。</li>
+</ul>
+</li>
+<li><strong>标识事务路径：</strong><ul>
+<li>使用不同的标记或颜色标识每个交易或事件的数据流路径。</li>
+</ul>
+</li>
+<li><strong>添加模块的详细信息：</strong><ul>
+<li>在每个模块内部，添加详细的信息，包括模块的功能、输入、输出等。</li>
+</ul>
+</li>
+<li><strong>优化模块结构：</strong><ul>
+<li>根据系统需求和性能要求，对模块进行适度的优化，确保模块之间的耦合度适中，内聚度较高。</li>
+</ul>
+</li>
+</ol>
+<h1 id="七、UI设计"><a href="#七、UI设计" class="headerlink" title="七、UI设计"></a>七、UI设计</h1><p>程序的用户界面（User Interface，UI）设计是确保用户与软件系统交互的关键部分。好的UI设计应该满足以下基本要求：</p>
+<h3 id="1-用户友好性："><a href="#1-用户友好性：" class="headerlink" title="1.用户友好性："></a>1.用户友好性：</h3><p>界面设计应该简单直观，用户能够轻松理解和使用。避免过多的复杂性和不必要的装饰。</p>
+<h3 id="2-一致性："><a href="#2-一致性：" class="headerlink" title="2.一致性："></a>2.一致性：</h3><p>保持界面元素的一致性，包括颜色、字体、图标等，以确保用户在整个应用程序中有一致的体验。</p>
+<h3 id="3-导航清晰："><a href="#3-导航清晰：" class="headerlink" title="3.导航清晰："></a>3.导航清晰：</h3><p>提供直观的导航路径，使用户能够轻松找到所需功能。使用明确的标签和菜单结构。</p>
+<h3 id="4-反馈机制："><a href="#4-反馈机制：" class="headerlink" title="4.反馈机制："></a>4.反馈机制：</h3><p>及时、清晰地向用户提供操作的反馈。例如，按钮点击后有响应、表单提交后有加载提示等。</p>
+<h3 id="5-有效布局："><a href="#5-有效布局：" class="headerlink" title="5.有效布局："></a>5.有效布局：</h3><p>使用合理的布局，确保页面元素有序排列，避免拥挤和混乱。考虑不同屏幕尺寸和分辨率的适应性。</p>
+<h3 id="6-可访问性："><a href="#6-可访问性：" class="headerlink" title="6.可访问性："></a>6.可访问性：</h3><p>确保用户界面对于不同能力和需求的用户都是可访问的。考虑键盘导航、屏幕阅读器等辅助技术。</p>
+<h3 id="7-响应式设计："><a href="#7-响应式设计：" class="headerlink" title="7.响应式设计："></a>7.响应式设计：</h3><p>针对不同设备和屏幕大小，采用响应式设计，使界面在各种平台上都能够合理显示和操作。</p>
+<h3 id="8-明确的标识："><a href="#8-明确的标识：" class="headerlink" title="8.明确的标识："></a>8.明确的标识：</h3><p>使用清晰明确的标识，例如图标、按钮文本等，以便用户能够准确理解各个功能。</p>
+<h3 id="9-避免强制学习："><a href="#9-避免强制学习：" class="headerlink" title="9.避免强制学习："></a>9.避免强制学习：</h3><p>设计界面时尽量避免需要用户进行长时间学习的操作，保持直观性和用户友好性。</p>
+<h3 id="10-安全性考虑："><a href="#10-安全性考虑：" class="headerlink" title="10.安全性考虑："></a>10.安全性考虑：</h3><p>对于需要用户输入的地方，进行有效的输入验证和错误提示，以保证系统的安全性。</p>
+<h3 id="11-美观性："><a href="#11-美观性：" class="headerlink" title="11.美观性："></a>11.美观性：</h3><p>尽量使界面看起来美观、清晰，考虑颜色搭配、字体选择等，以提高用户的舒适感。</p>
+<h3 id="12-易维护性："><a href="#12-易维护性：" class="headerlink" title="12.易维护性："></a>12.易维护性：</h3><p>使用模块化的设计和代码，以便于后期维护和更新。</p>
+<p>UI设计是一个动态的过程，应该与用户互动和反馈不断优化。在设计之前，了解目标用户、上下文和需求是至关重要的。</p>
+<h1 id="八、测试技术"><a href="#八、测试技术" class="headerlink" title="八、测试技术"></a>八、测试技术</h1><p>课本P146</p>
+]]></content>
+      <categories>
+        <category>课程</category>
+      </categories>
+      <tags>
+        <tag>课程</tag>
+      </tags>
+  </entry>
+</search>

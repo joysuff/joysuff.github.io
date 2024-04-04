@@ -162,6 +162,58 @@
       </tags>
   </entry>
   <entry>
+    <title>英语句子基本结构</title>
+    <url>/2024/04/04/%E8%8B%B1%E8%AF%AD%E5%8F%A5%E5%AD%90%E7%9A%84%E5%9F%BA%E6%9C%AC%E7%BB%93%E6%9E%84/</url>
+    <content><![CDATA[<blockquote>
+<p> 主语+谓语<br> 主语+谓语+宾语<br> 主语+谓语+表语<br> 主语+谓语+间接宾语+直接宾语<br> 主语+谓语+宾语+宾语补足语</p>
+</blockquote>
+<blockquote>
+<p> 主谓宾+主谓(系)表</p>
+</blockquote>
+<ol>
+<li>主谓宾的谓语一定是实义动词</li>
+<li>主谓表的谓语一定是系动词</li>
+</ol>
+<blockquote>
+<p>系动词分类</p>
+</blockquote>
+<ol>
+<li>表示状态：be动词，连接主语和表语，无意义，用于构成句子</li>
+<li>表示感官：look,sound,test,smell,feel(感官动词后只能加形容词)</li>
+<li>表示变化：grow,fall,turn.get,become</li>
+<li>表示保持：stand,keep,stay,remain</li>
+<li>表示表象：seem,appear</li>
+<li>表示结果：prove</li>
+</ol>
+<blockquote>
+<p>上述中既可以做系动词还可以做实义动词，下面为做实义动词时的意思</p>
+</blockquote>
+<ul>
+<li>get：得到</li>
+<li>turn：转动，转弯</li>
+<li>grow: 成长，发展，种植</li>
+<li>fall：下降</li>
+<li>keep：继续，养育 eg:keep on laughing 一直笑&#x2F;keep hens 养母鸡</li>
+<li>stay：逗留<br>如果要判断上面的单词时系动词还是实义动词，只需要看它们在句子中的意思</li>
+</ul>
+<blockquote>
+<p>主谓双宾</p>
+</blockquote>
+<p>间接宾语对整个句子的影响不大，多由指“人”的名词或代词充当，后面可以直接跟双宾的动词有：buy,pass,lend(借),give,tell,teach,show,send等</p>
+<blockquote>
+<p>主谓宾宾补</p>
+</blockquote>
+<p>宾语补足语主要作为补充说明宾语的特点、身份，或让宾语完成某个动作。宾语补足语常常是名词、形容词、副词、介词短语、分词、动词不定式。</p>
+]]></content>
+      <categories>
+        <category>英语</category>
+      </categories>
+      <tags>
+        <tag>学习</tag>
+        <tag>英语</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>计算机网络</title>
     <url>/2024/03/26/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/</url>
     <content><![CDATA[<h2 id="计算机网络涉及方面"><a href="#计算机网络涉及方面" class="headerlink" title="计算机网络涉及方面"></a>计算机网络涉及方面</h2><ul>
@@ -432,45 +484,6 @@
       </categories>
       <tags>
         <tag>课程</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Linux 命令</title>
-    <url>/2024/03/26/linux%E5%91%BD%E4%BB%A4/</url>
-    <content><![CDATA[<blockquote>
-<p>安装英伟达驱动</p>
-</blockquote>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">sudo apt install nvidia-cuda-toolkit</span><br></pre></td></tr></table></figure>
-
-<blockquote>
-<p>查看是否成功安装</p>
-</blockquote>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">nvcc -V</span><br></pre></td></tr></table></figure>
-
-<blockquote>
-<p>查看显卡信息</p>
-</blockquote>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">nvidia-smi</span><br></pre></td></tr></table></figure>
-
-<span id="more"></span>
-
-<blockquote>
-<p>sed -i ‘s@^(deb.*stable main)$@#\1\ndeb <a href="https://mirrors.tuna.tsinghua.edu.cn/termux/termux-packages-24">https://mirrors.tuna.tsinghua.edu.cn/termux/termux-packages-24</a> stable main@’ $PREFIX&#x2F;etc&#x2F;apt&#x2F;sources.list</p>
-<p>pkg update</p>
-<p>pkg install nodejs-lts<br>pkg install git<br>pkg install vim</p>
-<p>mkdir hexo<br>chmod 777 hexo<br>cd hexo</p>
-<p>npm install hexo-cli -g<br>hexo init</p>
-<p>hexo g<br>hexo s </p>
-<p>主题<br>git clone -b master <a href="https://github.com/jerryc127/hexo-theme-butterfly.git">https://github.com/jerryc127/hexo-theme-butterfly.git</a> themes&#x2F;butterfly</p>
-<p>vim themes&#x2F;butterfly&#x2F;_config.yml</p>
-<p>vim编辑器:<br>输入i才能编辑<br>按下esc 再输入:wq保存退出npm install hexo-renderer-pug hexo-renderer-stylus –save</p>
-</blockquote>
-]]></content>
-      <categories>
-        <category>linux</category>
-      </categories>
-      <tags>
-        <tag>linux</tag>
       </tags>
   </entry>
   <entry>

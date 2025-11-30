@@ -1,0 +1,538 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>生成树协议（STP） | Blog</title><meta name="author" content="Joysuff"><meta name="copyright" content="Joysuff"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="ffffff"><meta name="description" content="以太网交换网络中为了进行链路备份，提高网络可靠性，通常会使用冗余链路。但是使用冗余链路会在交换网络上产生环路，引发广播风暴以及MAC地址表不稳定等故障现象从而导致用户通信质量较差，甚至通信中断。为解决交换网络中的环路问题，提出了生成树协议STP(SpanningTree Protocol)。 运行STP协议的设备通过彼此交互信息发现网络中的环路，并有选择的对某个接口进行阻塞，最终将环形网络结构修剪">
+<meta property="og:type" content="article">
+<meta property="og:title" content="生成树协议（STP）">
+<meta property="og:url" content="https://joysuff.github.io/2025/11/29/%E7%94%9F%E6%88%90%E6%A0%91%E5%8D%8F%E8%AE%AE%EF%BC%88STP%EF%BC%89/index.html">
+<meta property="og:site_name" content="Blog">
+<meta property="og:description" content="以太网交换网络中为了进行链路备份，提高网络可靠性，通常会使用冗余链路。但是使用冗余链路会在交换网络上产生环路，引发广播风暴以及MAC地址表不稳定等故障现象从而导致用户通信质量较差，甚至通信中断。为解决交换网络中的环路问题，提出了生成树协议STP(SpanningTree Protocol)。 运行STP协议的设备通过彼此交互信息发现网络中的环路，并有选择的对某个接口进行阻塞，最终将环形网络结构修剪">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://wyh.serv00.net/view.php/ab9ef0aebc8423a8d32ba835c724cfdf.png">
+<meta property="article:published_time" content="2025-11-29T03:29:00.000Z">
+<meta property="article:modified_time" content="2025-11-29T14:21:54.765Z">
+<meta property="article:author" content="Joysuff">
+<meta property="article:tag" content="网络基础">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://wyh.serv00.net/view.php/ab9ef0aebc8423a8d32ba835c724cfdf.png"><script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "生成树协议（STP）",
+  "url": "https://joysuff.github.io/2025/11/29/%E7%94%9F%E6%88%90%E6%A0%91%E5%8D%8F%E8%AE%AE%EF%BC%88STP%EF%BC%89/",
+  "image": "https://wyh.serv00.net/view.php/ab9ef0aebc8423a8d32ba835c724cfdf.png",
+  "datePublished": "2025-11-29T03:29:00.000Z",
+  "dateModified": "2025-11-29T14:21:54.765Z",
+  "author": [
+    {
+      "@type": "Person",
+      "name": "Joysuff",
+      "url": "https://joysuff.github.io"
+    }
+  ]
+}</script><link rel="shortcut icon" href="/img/favicon.png"><link rel="canonical" href="https://joysuff.github.io/2025/11/29/%E7%94%9F%E6%88%90%E6%A0%91%E5%8D%8F%E8%AE%AE%EF%BC%88STP%EF%BC%89/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="stylesheet" href="/css/index.css?v=5.5.2"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.1.0/css/all.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui@6.1.4/dist/fancybox/fancybox.min.css" media="print" onload="this.media='all'"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!false && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', 'ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          theme === 'dark' ? activateDarkMode() : theme === 'light' ? activateLightMode() : null
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":250,"highlightFullpage":false,"highlightMacStyle":true},
+  copy: {
+    success: '复制成功',
+    error: '复制失败',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '天',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'fancybox',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid@4.12.0/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: false,
+  islazyloadPlugin: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: true,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: '生成树协议（STP）',
+  isHighlightShrink: false,
+  isToc: true,
+  pageType: 'post'
+}</script><meta name="generator" content="Hexo 8.1.1"></head><body><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src="/img/joy.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="site-data text-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">2</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">3</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">1</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 主页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/shuoshuo/"><i class="fa-fw fa-solid fa-comment"></i><span> 说说</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url(https://wyh.serv00.net/view.php/ab9ef0aebc8423a8d32ba835c724cfdf.png);"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><span class="site-name">Blog</span></a><a class="nav-page-title" href="/"><span class="site-name">生成树协议（STP）</span><span class="site-name"><i class="fa-solid fa-circle-arrow-left"></i><span>  返回首页</span></span></a></span><div id="menus"><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 主页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/shuoshuo/"><i class="fa-fw fa-solid fa-comment"></i><span> 说说</span></a></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav><div id="post-info"><h1 class="post-title">生成树协议（STP）</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2025-11-29T03:29:00.000Z" title="发表于 2025-11-29 11:29:00">2025-11-29</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2025-11-29T14:21:54.765Z" title="更新于 2025-11-29 22:21:54">2025-11-29</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%E7%BD%91%E7%BB%9C%E5%8D%8F%E8%AE%AE/">网络协议</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">浏览量:</span><span class="waline-pageview-count" data-path="/2025/11/29/%E7%94%9F%E6%88%90%E6%A0%91%E5%8D%8F%E8%AE%AE%EF%BC%88STP%EF%BC%89/"><i class="fa-solid fa-spinner fa-spin"></i></span></span><span class="post-meta-separator">|</span><span class="post-meta-commentcount"><i class="far fa-comments fa-fw post-meta-icon"></i><span class="post-meta-label">评论数:</span><a href="/2025/11/29/%E7%94%9F%E6%88%90%E6%A0%91%E5%8D%8F%E8%AE%AE%EF%BC%88STP%EF%BC%89/#post-comment"><span class="waline-comment-count" data-path="/2025/11/29/%E7%94%9F%E6%88%90%E6%A0%91%E5%8D%8F%E8%AE%AE%EF%BC%88STP%EF%BC%89/"><i class="fa-solid fa-spinner fa-spin"></i></span></a></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><div id="post-outdate-notice" data="{&quot;limitDay&quot;:365,&quot;messagePrev&quot;:&quot;It has been&quot;,&quot;messageNext&quot;:&quot;days since the last update, the content of the article may be outdated.&quot;,&quot;postUpdate&quot;:&quot;2025-11-29 22:21:54&quot;}" hidden></div><p>以太网交换网络中为了进行链路备份，提高网络可靠性，通常会使用冗余链路。但是使用冗余链路会在交换网络上产生环路，引发广播风暴以及MAC地址表不稳定等故障现象从而导致用户通信质量较差，甚至通信中断。为解决交换网络中的环路问题，提出了生成树协议STP(SpanningTree Protocol)。</p>
+<p>运行STP协议的设备通过彼此交互信息发现网络中的环路，并有选择的对某个接口进行阻塞，最终将环形网络结构修剪成无环路的树形网络结构，从而防止报文在环形网络中不断循环，避免设备由于重复接收相同的报文造成处理能力下降。</p>
+<p>RSTP(Rapid Spanning Tree Protocol)协议基于STP协议，对原有的STP协议进行了更加细致的修改和补充，实现了网络拓扑快速收敛。</p>
+<h1>背景</h1>
+<h2 id="二层交换机网络的冗余性与环路">二层交换机网络的冗余性与环路</h2>
+<p><img src="/access/Pasted%20image%2020251128093837.png" alt=""></p>
+<h2 id="二层环路带来的问题">二层环路带来的问题</h2>
+<p><img src="/access/Pasted%20image%2020251128093949.png" alt=""></p>
+<h1>STP概述</h1>
+<p>STP(Spanning Tree Protocol,生成树协议)，在网络上出现环路时，逻辑上断开环路，防止广播风暴的产生。即阻塞某些接口，破除环路。当主线路故障，阻塞接口被激活；主线路恢复，备份线路再次被阻塞。</p>
+<p>在网络中部署生成树后，交换机之间会进行生成树协议报文的交互并进行无环拓扑计算，最终将网络中的某个（或某些）接口进行阻塞（Block），从而打破环路。</p>
+<p>交换机上运行的生成树协议会持续监控网络的拓扑结构，当网络拓扑结构发生变化时，生成树能感知到这些变化（使用TCN BPTU），并且自动做出调整。</p>
+<p>由于局域网规模的不断增长，生成树协议已经成为了当前最重要的局域网协议之一。</p>
+<p>因此，生成树既能解决二层环路问题，也能为网络的冗余性提供一种方案。</p>
+<ul>
+<li>生成树协议在园区网络中的应用位置<br>
+<img src="/access/Pasted%20image%2020251128094506.png" alt=""></li>
+</ul>
+<h1>STP的基本概念及工作原理</h1>
+<h2 id="概念">概念</h2>
+<h3 id="桥ID（Bridge-ID-BID">桥ID（Bridge ID,BID)</h3>
+<p>IEEE 802.1D标准中规定BID由16位的桥优先级（Bridge Priority）与桥MAC地址构成。</p>
+<p>每一台运行STP的交换机都拥有一个唯一的BID。</p>
+<p>BID桥优先级占据高16bit，其余的低48bit是桥MAC地址。</p>
+<p>在STP网络中，BID最小的设备会被选举为根桥。</p>
+<blockquote>
+<p>[!NOTE] 备注<br>
+此处网桥（Bridge ），或者桥也就是交换机。</p>
+</blockquote>
+<p><img src="/access/Pasted%20image%2020251129103936.png" alt=""></p>
+<p>网桥优先级的取值范围：<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>0</mn></mrow><annotation encoding="application/x-tex">0</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6444em;"></span><span class="mord">0</span></span></span></span>  ~ <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msup><mn>2</mn><mn>16</mn></msup><mo>−</mo><mn>1</mn></mrow><annotation encoding="application/x-tex">2^{16}-1</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8974em;vertical-align:-0.0833em;"></span><span class="mord"><span class="mord">2</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8141em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">16</span></span></span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">−</span><span class="mspace" style="margin-right:0.2222em;"></span></span><span class="base"><span class="strut" style="height:0.6444em;"></span><span class="mord">1</span></span></span></span> ，即<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>0</mn></mrow><annotation encoding="application/x-tex">0</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6444em;"></span><span class="mord">0</span></span></span></span> ~ <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>65535</mn></mrow><annotation encoding="application/x-tex">65535</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6444em;"></span><span class="mord">65535</span></span></span></span><br>
+缺省值为：<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>32768</mn></mrow><annotation encoding="application/x-tex">32768</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6444em;"></span><span class="mord">32768</span></span></span></span></p>
+<h3 id="根桥-Root-Bridge">根桥(Root Bridge)</h3>
+<p>STP的主要作用之一是在整个交换网络中计算出一棵无环的&quot;树”(STP树)。</p>
+<p>根桥是一个STP交换网络中的&quot;树根&quot;。</p>
+<p>STP开始工作后，会在交换网络中选举一个根桥，根桥是生成树进行拓扑计算的重要“参考点”，是STP计算得出的无环拓扑的“树根”。</p>
+<p>在STP网络中，桥ID（BID）最小的设备会被选举为根桥</p>
+<p>在BID的比较过程中，首先比较桥优先级，优先级的值越小则越优先，拥有最小优先级值的交换机会成为根桥;如果优先级相等，那么再比较MAC地址，拥有最小MAC地址的交换机会成为根桥。</p>
+<h3 id="Cost">Cost</h3>
+<p>每一个激活了STP的接口都维护着一个Cost值，接口的Cost主要用于计算根路径开销，也就是到达根的开销。</p>
+<p>接口的缺省Cost除了与其速率、工作模式有关，还与交换机使用的STP Cost计算方法有关。</p>
+<p>接口带宽越大，则Cost值越小。</p>
+<p>用户也可以根据需要通过命令调整接口的Cost。</p>
+<ul>
+<li><code>Cost</code>值计算方法<br>
+<img src="/access/Pasted%20image%2020251128095911.png" alt=""></li>
+</ul>
+<p>接口Cost是已经激活了STP的接口所维护的一个开销值，该值存在默认值，与接口的速率有关联，并且设备使用不同的算法时，相同的接口速率对应不同的Cost值。</p>
+<h3 id="跟路径开销-RPC">跟路径开销 (RPC)</h3>
+<p>在STP的拓扑计算过程中，一个非常重要的环节就是“丈量”交换机某个接口到根桥的“成本”，也即RPC（Root Path Cost)。</p>
+<p>一台设备从某个接口到达根桥的RPC等于从根桥到该设备沿途所有入方向接口的Cost累加。</p>
+<h3 id="接口ID（Port-ID，PID）">接口ID（Port ID，PID）</h3>
+<p>运行STP的交换机使用接口ID来标识每个接口，接口ID主要用于在特定场景下选举指定接口。</p>
+<p>接口ID由两部分构成的，高4 bit是接口优先级，低12 bit是接口编号。</p>
+<p>激活STP的接口会维护一个缺省的接口优先级，在华为交换机上，该值为<code>128</code>。用户可以根据实际需要，通过命令修改该优先级。</p>
+<p>端口标识<strong>越小越优先</strong>，由端口优先级和端口号两部分组成，端口优先级可配置，默认值128</p>
+<p><img src="/access/Pasted%20image%2020251128100948.png" alt=""><br>
+端口优先级的步长为：16<br>
+端口优先级的取值范围为：<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>0</mn></mrow><annotation encoding="application/x-tex">0</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6444em;"></span><span class="mord">0</span></span></span></span> ~ <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>240</mn></mrow><annotation encoding="application/x-tex">240</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6444em;"></span><span class="mord">240</span></span></span></span>（1字节范围为0 ~ 255，步长为16，<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>240</mn><mo>+</mo><mn>16</mn><mo>=</mo><mn>256</mn></mrow><annotation encoding="application/x-tex">240 + 16 = 256</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.7278em;vertical-align:-0.0833em;"></span><span class="mord">240</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222em;"></span></span><span class="base"><span class="strut" style="height:0.6444em;"></span><span class="mord">16</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.6444em;"></span><span class="mord">256</span></span></span></span> 超出了一个字节表示的范围）</p>
+<h3 id="网桥协议数据单元（BPDU）">网桥协议数据单元（BPDU）</h3>
+<p>BPDU（Bridge Protocol Data Unit，网桥协议数据单元）是STP能够正常工作的根本。BPDU是STP的协议报文。</p>
+<p>STP交换机之间会交互BPDU报文，这些BPDU报文携带着一些重要信息，正是基于这些信息，STP才能够顺利工作。</p>
+<ul>
+<li>BPDU分为两种类型：
+<ul>
+<li>配置BPDU（Configuration BPDU）</li>
+<li>TCN BPDU（Topology Change Notification BPDU）</li>
+</ul>
+</li>
+</ul>
+<p>配置BPDU是STP进行拓扑计算的关键；TCN BPDU只在网络拓扑发生变更时才会被触发。</p>
+<ul>
+<li>配置BPDU的报文格式<br>
+<img src="/access/Pasted%20image%2020251128101527.png" alt=""></li>
+</ul>
+<p><img src="/access/Pasted%20image%2020251128102227.png" alt=""></p>
+<ul>
+<li>计时器：BPDU报文在网络中的生存周期（配置BPDU报文每经过一台桥设备，报文老化时间+1）</li>
+<li>最大老化时间:BPDU报文在网络中最大的老化时间（当报文老化时间大于最大老化时间时，BPDU报文将被丢弃。桥设备将根桥看做不可用前保留根ID的最大时间。最大老化时间可修改，默认为20秒）</li>
+<li>访问时间：根桥经过特定的时间向其他桥设备发送BPDU报文，为STP生成树存活，这一特定的时间就是访问时间（每间隔2秒一次）</li>
+<li>转发延时：端口状态改变时所需要的时间（30秒）</li>
+</ul>
+<h2 id="配置BPDU的比较原则">配置BPDU的比较原则</h2>
+<p>对于STP而言，最重要的工作就是在交换网络中计算出一个无环拓扑。在拓扑计算的过程中，一个非常重要的内容就是配置BPDU的比较。在配置BPDU中，有四个字段非常关键，它们是“根桥ID”、“根路径开销”、“网桥ID”以及“接口ID”，这四个字段便是交换机进行配置BPDU比较的关键内容。</p>
+<p>STP按照如下顺序选择最优的配置BPDU：</p>
+<ol>
+<li>最小的根桥ID</li>
+<li>最小的RPC</li>
+<li>最小的网桥ID</li>
+<li>最小的接口ID<br>
+在这四条原则中（每条原则都对应配置BPDU中的相应字段），第一条原则主要用于在网络中选举根桥，后面的原则主要用于选举根接口及指定接口。</li>
+</ol>
+<h2 id="STP的计算过程">STP的计算过程</h2>
+<h3 id="选举根桥">选举根桥</h3>
+<ul>
+<li>什么是根桥？
+<ul>
+<li>根桥是STP树的根节点。</li>
+<li>要生成一棵STP树，首先要确定出一个根桥。</li>
+<li>根桥是整个交换网络的逻辑中心，但不一定是它的物理中心。</li>
+<li>当网络的拓扑发生变化时，根桥也可能发生变化。（抢占）</li>
+</ul>
+</li>
+<li>选举过程：
+<ul>
+<li>STP交换机初始启动之后，都会认为自己是根桥，并在发送给其他交换机的BPDU中宣告自己为根桥。因此，此时BPDU中的根桥ID为各自设备的网桥ID。</li>
+<li>当交换机收到网络中其他设备发送来的BPDU后，会比较BPDU中的根桥ID和自己的BID。</li>
+<li>交换机不断交互BPDU，同时对BID进行比较，最终选举一台BID最小的交换机作为根桥，其他的则为非根桥。</li>
+</ul>
+</li>
+</ul>
+<blockquote>
+<p>[!WARNING] 注意<br>
+根桥的角色可抢占。当有更优的BID的交换机加入网络时，网络会重新进行STP计算，选出新的根桥。</p>
+</blockquote>
+<h3 id="在每台非根桥上选举一个根接口">在每台非根桥上选举一个根接口</h3>
+<ul>
+<li>什么是根端口？
+<ul>
+<li>一个非根桥设备上会有多个端口与网络相连，为了保证从某台非根桥设备到根桥设备的工作路径是最优且唯一的，就必须从该非根桥设备的端口中确定出一个被称为“根端口”的端口，由根端口来作为该非根桥设备与根桥设备之间进行报文交互的端口。</li>
+<li>在选举出根桥后，根桥仍然持续发送BPDU，而非根桥将持续不断的收到根桥发送的BPDU。因此，在所有非根桥上选举一个距离根桥“最近”的端口（根端口），在网络收敛后，根端口将不断的收到来自根桥的BPDU。</li>
+<li>根端口保证了交换机与根桥之间工作路径的唯一性和最优性。</li>
+</ul>
+</li>
+</ul>
+<blockquote>
+<p>[!WARNING] 注意<br>
+一个非根桥设备上，最多只能有一个根端口</p>
+</blockquote>
+<ul>
+<li>选举过程：
+<ol>
+<li>交换机有多个端口接入网络，各个端口都会收到BPDU报文，报文中会携带“RootID、RPC、BID、PID”等关键字段，端口会针对这些字段进行PK。</li>
+<li>首先比较根路径开销（RPC），STP协议把根路径开销作为确定根端口的重要依据。RPC值越小，越优选，因此交换机会选RPC最小的端口作为根端口。</li>
+<li>当RPC相同时，比较上行交换机的BID，即比较交换机各个端口收到的BPDU中的BID，值越小，越优选，因此交换机会选上行设备BID最小的端口作为根端口。</li>
+<li>当上行交换机BID相同时，比较上行交换机的PID，即比较交换机各个端口收到的BPDU中的PID，值越小，越优先，因此交换机会选上行设备PID最小的端口作为根端口。</li>
+<li>当上行交换机的PID相同时，则比较本地交换机的PID，即比较本端交换机各个端口各自的PID，值越小，越优先，因此交换机会选端口PID最小的端口作为根端口。</li>
+</ol>
+</li>
+</ul>
+<h3 id="在每条链路上选举一个指定接口">在每条链路上选举一个指定接口</h3>
+<ul>
+<li>什么是指定端口？
+<ul>
+<li>网络中的每个链路与根桥之间的工作路径必须是唯一的且最优的。当一个链路有两条及以上的路径通往根桥时（该链路连接了不同的交换机，或者该链路连接了同一台交换机的不同端口），与该链路相连的交换机（可能不止一台）就必须确定出一个唯一的指定端口。</li>
+<li>因此，每个链路（Link）选举一个指定端口，用于向这个链路发送BPDU。</li>
+</ul>
+</li>
+</ul>
+<blockquote>
+<p>[!WARNING] 注意<br>
+一般情况下，<strong>根桥的所有接口都是指定接口</strong>。<br>
+在一条链路上有且只有一个指定端口，并且跟交换机上的接口都是指定端口</p>
+</blockquote>
+<ul>
+<li>选举过程：<br>
+指定端口也是通过比较RPC来确定的，选择RPC最小的作为指定端口，如果RPC相同，则比较BID和PID。
+<ol>
+<li>首先比较根路径开销（RPC），值越小，越优选，因此交换机会选RPC最小的端口作为指定端口。</li>
+<li>若RPC相等，则比较链路两端交换机的BID，值越小，越优选，因此交换机会选BID最小的交换机的端口作为指定端口。</li>
+<li>若BID相等，则比较链路对端端端口的PID，值越小，越优选，因此交换机会选PID最小的交换机的端口作为指定端口。</li>
+</ol>
+</li>
+</ul>
+<h3 id="非指定接口被阻塞">非指定接口被阻塞</h3>
+<ul>
+<li>
+<p>什么是非指定端口（预备端口）</p>
+<ul>
+<li>在确定了根端口和指定端口之后，交换机上所有剩余的非根端口和非指定端口统称为预备端口。</li>
+</ul>
+</li>
+<li>
+<p>阻塞非指定端口</p>
+<ul>
+<li>STP会对这些非指定端口进行逻辑阻塞，即这些端口不能转发由终端计算机产生并发送的帧（用户数据帧）。</li>
+<li>一旦非指定端口被逻辑阻塞后，STP树（无环路工作拓扑）就生成了。</li>
+</ul>
+</li>
+</ul>
+<blockquote>
+<p>[!WARNING] 注意<br>
+非指定端口可以接收并处理BPDU。<br>
+根端口和指定端口既可以接收和发送BPDU，也可以转发用户数据帧。</p>
+</blockquote>
+<h2 id="示例">示例</h2>
+<p><img src="/access/Pasted%20image%2020251128165514.png" alt=""></p>
+<p>首先选举根桥，四台交换机的桥优先级相同，则比较桥MAC地址，谁小谁优先，最终选举SW1为根桥；</p>
+<p>其次选举根端口，SW2上GE0/0/1距离根桥最近，RPC最小，所以SW2的GE0/0/1为根端口，同理SW3的GE0/0/2也为根端口，SW4的两个端口RPC相同，然后比较SW4的G0/0/1对应的交换机SW2的BID与G0/0/2对应的交换机SW3的BID，谁小谁优先，最终选举出SW4的GE0/0/1端口为根端口；</p>
+<p>然后选举指定端口，SW1为根桥，所以SW1上的GE0/0/0和GE0/0/1端口为指定端口，SW2的GE0/0/2端口接收到SW4的配置BPDU，比较RPC，SW2比SW4的RPC更小，所以SW2的GE0/0/2端口为指定端口，同理可得SW3的GE0/0/1端口为指定端口；</p>
+<p>最终非根端口，非指定端口的SW4的GE0/0/2端口为预备端口。</p>
+<h2 id="总结">总结</h2>
+<ul>
+<li>根接口<br>
+在每一个<strong>非根交换机上</strong>，有且只有一个，距离根交换机最近的接口</li>
+<li>指定端口<br>
+每一条链路上，有且只有一个，距离根交换机最近的接口</li>
+<li>非指定端口<br>
+除了根端口和非指定端口，剩余所有端口都叫做非指定端口</li>
+</ul>
+<h1>STP信息查看</h1>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><span class="line">[Huawei]display stp</span><br><span class="line">-------[CIST Global Info][Mode STP]-------  运行STP的模式</span><br><span class="line">CIST Bridge         :32768.4c1f-cc23-619e</span><br><span class="line">Config Times        :Hello 2s MaxAge 20s FwDly 15s MaxHop 20      管理员配置的STP协议的定时器</span><br><span class="line">Active Times        :Hello 2s MaxAge 20s FwDly 15s MaxHop 20      设备在执行的STP协议的定时器</span><br><span class="line">CIST Root/ERPC      :32768.4c1f-cc23-619e / 0               根桥的BID/根端口到根桥的开销</span><br><span class="line">CIST RegRoot/IRPC   :32768.4c1f-cc23-619e / 0               对于STP/RSTP无意义，MSTP使用的STP参数</span><br><span class="line">CIST RootPortId     :0.0                     根端口的PID，根交换机始终为0.0</span><br><span class="line">BPDU-Protection     :Disabled</span><br><span class="line">TC or TCN received  :16</span><br><span class="line">TC count per hello  :0</span><br><span class="line">STP Converge Mode   :Normal </span><br><span class="line">Time since last TC  :0 days 0h:0m:23s</span><br><span class="line">Number of TC        :9</span><br><span class="line">Last TC occurred    :GigabitEthernet0/0/1</span><br><span class="line">----[Port1(GigabitEthernet0/0/1)][FORWARDING]----</span><br><span class="line"> Port Protocol       :Enabled                           启用STP协议</span><br><span class="line"> Port Role           :Designated Port                   端口角色</span><br><span class="line"> Port Priority       :128                               端口优先级</span><br><span class="line"> Port Cost(Dot1T )   :Config=auto / Active=20000        描述cost标准，以及开销值</span><br><span class="line"> 如果类口角色是DP，则代表本交换机自身的BID/PID</span><br><span class="line"> 如果端目角色是RP/AP，则代表对端交换机的BID/PID</span><br><span class="line"> Designated Bridge/Port   :32768.4c1f-cc23-619e / 128.1 </span><br><span class="line"> Port Edged          :Config=default / Active=disabled   disabled代表非边缘端口enable代表边缘端口</span><br><span class="line"> Point-to-point      :Config=auto / Active=true          true表示全双工链路，false表示半双工链路</span><br><span class="line"> Transit Limit       :147 packets/hello-time</span><br><span class="line"> Protection Type     :None</span><br><span class="line"> Port STP Mode       :STP </span><br><span class="line"> Port Protocol Type  :Config=auto / Active=dot1s</span><br><span class="line"> BPDU Encapsulation  :Config=stp / Active=stp</span><br><span class="line"> PortTimes           :Hello 2s MaxAge 20s FwDly 15s RemHop 20</span><br><span class="line"> TC or TCN send      :18</span><br><span class="line"> TC or TCN received  :2</span><br><span class="line"> BPDU Sent           :40             </span><br><span class="line">          TCN: 0, Config: 40, RST: 0, MST: 0</span><br><span class="line"> BPDU Received       :3             </span><br><span class="line">          TCN: 2, Config: 1, RST: 0, MST: 0</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<h1>STP的接口状态</h1>
+<table>
+<thead>
+<tr>
+<th>状态名称</th>
+<th>状态描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>禁用（Disable）</td>
+<td>该接口不能收发BPDU，也不能收发业务数据帧，例如接口为down</td>
+</tr>
+<tr>
+<td>阻塞（Blocking）</td>
+<td>该接口被STP阻塞。处于阻塞状态的接口不能发送BPDU，但是会持续侦听BPDU，而且不能收发业务数据帧，也不会进行MAC地址学习</td>
+</tr>
+<tr>
+<td>侦听（Listening）</td>
+<td>当接口处于该状态时，表明STP初步认定该接口为根接口或指定接口，但接口依然处于STP计算的过程中，此时接口可以收发BPDU，但是不能收发业务数据帧，也不会进行MAC地址学习</td>
+</tr>
+<tr>
+<td>学习（Learning）</td>
+<td>当接口处于该状态时，会侦听业务数据帧（但是不能转发业务数据帧），并且在收到业务数据帧后进行MAC地址学习</td>
+</tr>
+<tr>
+<td>转发（Forwarding）</td>
+<td>处于该状态的接口可以正常地收发业务数据帧，也会进行BPDU处理。接口的角色需是根接口或指定接口才能进入转发状态</td>
+</tr>
+</tbody>
+</table>
+<h1>STP的接口状态迁移</h1>
+<p><img src="/access/Pasted%20image%2020251129110458.png" alt=""></p>
+<h1>故障</h1>
+<h2 id="拓扑变化-根桥故障">拓扑变化 - 根桥故障</h2>
+<p><img src="/access/Pasted%20image%2020251129110633.png" alt=""></p>
+<h2 id="拓扑变化-直连链路故障">拓扑变化 - 直连链路故障</h2>
+<p><img src="/access/Pasted%20image%2020251129110706.png" alt=""></p>
+<h2 id="拓扑变化-非直连链路故障">拓扑变化 - 非直连链路故障</h2>
+<p>非直连链路故障后，SW3的备用端口恢复到转发状态，非直连故障会导致50s左右的恢复时间。<br>
+<img src="/access/Pasted%20image%2020251129110729.png" alt=""></p>
+<h2 id="拓扑改变导致MAC地址表错误">拓扑改变导致MAC地址表错误</h2>
+<p><img src="/access/Pasted%20image%2020251129111715.png" alt=""><br>
+TCN BPDU用来解决MAC地址错误的问题<br>
+<img src="/access/Pasted%20image%2020251129111910.png" alt=""></p>
+<h1>STP配置命令</h1>
+<ul>
+<li>
+<p>1.配置生成树工作模式：<code>[Huawei] stp mode { stp | rstp | mstp }</code><br>
+交换机支持STP、RSTP和MSTP（Multiple Spanning Tree Protocol）三种生成树工作模式，默认情况工作在MSTP模式。</p>
+</li>
+<li>
+<p>配置根桥：<code>[Huawei] stp root primary</code><br>
+配置当前设备为根桥。缺省情况下，交换机不作为任何生成树的根桥。配置后该设备优先级数值自动为0，并且不能更改设备优先级。</p>
+</li>
+<li>
+<p>备份根桥：<code>[Huawei] stp root secondary</code><br>
+配置当前交换机为备份根桥。缺省情况下，交换机不作为任何生成树的备份根桥。配置后该设备优先级数值为4096，并且不能更改设备优先级。</p>
+</li>
+<li>
+<p>配置交换机的STP优先级：<code>[Huawei] stp priority priority</code><br>
+缺省情况下，交换机的优先级取值是32768。</p>
+</li>
+<li>
+<p>配置接口路径开销：</p>
+</li>
+</ul>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[Huawei] stp pathcost-standard &#123; dot1d-1998 | dot1t | legacy &#125;</span><br></pre></td></tr></table></figure>
+<p>配置接口路径开销计算方法。缺省情况下，路径开销值的计算方法为IEEE 802.1t（dot1t）标准方法。<br>
+同一网络内所有交换机的接口路径开销应使用相同的计算方法。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[Huawei-GigabitEthernet0/0/1] stp cost cost</span><br></pre></td></tr></table></figure>
+<p>设置当前接口的路径开销值。</p>
+<ul>
+<li>
+<p>配置接口优先级：<code>[Huawei-g0/0/1] stp port priority priority</code><br>
+配置接口的优先级。缺省情况下，交换机接口的优先级取值是128。</p>
+</li>
+<li>
+<p>启用STP/RSTP/MSTP：<code>[Huawei] stp enable</code><br>
+使能交换机的STP/RSTP/MSTP功能。缺省情况下，设备的STP/RSTP/MSTP功能处于启用状态。</p>
+</li>
+<li>
+<p>查看STP接口状态摘要：</p>
+</li>
+</ul>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">MSTID  Port                        Role  STP State     Protection</span><br><span class="line">   0    GigabitEthernet0/0/1        DESI  FORWARDING      NONE</span><br><span class="line">   0    GigabitEthernet0/0/2        ROOT  FORWARDING      NONE</span><br><span class="line"># Role: RESI:指定接口   ROOT:根接口  ALTE:阻塞接口</span><br><span class="line"># STP State:  FORWARDING:转发       DISCARDING:丢弃</span><br></pre></td></tr></table></figure>
+<h1>STP缺点</h1>
+<ol>
+<li>收敛时间慢</li>
+</ol>
+<p>STP的3种计时器，用于维护STP转发路径以及恢复STP故障链路</p>
+<ul>
+<li>Hel1o时间：一个端口上发送BPDU的时间间隔，默认是2s;</li>
+<li>转发延迟(Forward delay)：端口在侦听和学习状态，分别停留的时间（15s）</li>
+<li>最大老化时间(Max Age)：一个端口最大的“没有接收BPDU”的时间间隔（20s）</li>
+</ul>
+<p>STP的收敛时间为：30s ~ 50s ，非常慢</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">   ^</span><br><span class="line">   |</span><br><span class="line">50s|-----------------转发</span><br><span class="line">   |  15s               转发延迟</span><br><span class="line">35s|-----------------学习</span><br><span class="line">   |  15s               转发延迟</span><br><span class="line">20s|-----------------侦听</span><br><span class="line">   |  20s               最大寿命</span><br><span class="line">   ------------------阻塞</span><br></pre></td></tr></table></figure>
+<ol start="2">
+<li>STP没有细致区分接口状态和接口角色，不利于初学者学习及部署</li>
+</ol>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a href="https://joysuff.github.io">Joysuff</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="https://joysuff.github.io/2025/11/29/%E7%94%9F%E6%88%90%E6%A0%91%E5%8D%8F%E8%AE%AE%EF%BC%88STP%EF%BC%89/">https://joysuff.github.io/2025/11/29/生成树协议（STP）/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来源 <a href="https://joysuff.github.io" target="_blank">Blog</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/%E7%BD%91%E7%BB%9C%E5%9F%BA%E7%A1%80/">网络基础</a></div><div class="post-share"><div class="social-share" data-image="https://wyh.serv00.net/view.php/ab9ef0aebc8423a8d32ba835c724cfdf.png" data-sites="facebook,x,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related full-width" href="/2025/11/30/butterfly%E4%B8%BB%E9%A2%98%E6%96%87%E7%AB%A0%E9%A1%B5%E9%85%8D%E7%BD%AE%20copy/" title="butterfly主题文章页配置"><img class="cover" src="https://wyh.serv00.net/view.php/3b0b5c281d2d84d4f65931de36a39da1.png" onerror="onerror=null;src='/img/404.jpg'" alt="cover of previous post"><div class="info"><div class="info-1"><div class="info-item-1">上一篇</div><div class="info-item-2">butterfly主题文章页配置</div></div><div class="info-2"><div class="info-item-1">Post Front-matter 用于文章页配置</div></div></div></a></nav><hr class="custom-hr"/><div id="post-comment"><div class="comment-head"><div class="comment-headline"><i class="fas fa-comments fa-fw"></i><span> 评论</span></div></div><div class="comment-wrap"><div><div id="waline-wrap"></div></div></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="/img/joy.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info-name">Joysuff</div><div class="author-info-description"></div><div class="site-data"><a href="/archives/"><div class="headline">文章</div><div class="length-num">2</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">3</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">1</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/joysuff"><i class="fab fa-github"></i><span>Follow Me</span></a><div class="card-info-social-icons"><a class="social-icon" href="https://github.com/joysuff" target="_blank" title="Github"><i class="fab fa-github" style="color: #24292e;"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">This is my Blog</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link"><span class="toc-number">1.</span> <span class="toc-text">背景</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BA%8C%E5%B1%82%E4%BA%A4%E6%8D%A2%E6%9C%BA%E7%BD%91%E7%BB%9C%E7%9A%84%E5%86%97%E4%BD%99%E6%80%A7%E4%B8%8E%E7%8E%AF%E8%B7%AF"><span class="toc-number">1.1.</span> <span class="toc-text">二层交换机网络的冗余性与环路</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BA%8C%E5%B1%82%E7%8E%AF%E8%B7%AF%E5%B8%A6%E6%9D%A5%E7%9A%84%E9%97%AE%E9%A2%98"><span class="toc-number">1.2.</span> <span class="toc-text">二层环路带来的问题</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link"><span class="toc-number">2.</span> <span class="toc-text">STP概述</span></a></li><li class="toc-item toc-level-1"><a class="toc-link"><span class="toc-number">3.</span> <span class="toc-text">STP的基本概念及工作原理</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%A6%82%E5%BF%B5"><span class="toc-number">3.1.</span> <span class="toc-text">概念</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%A1%A5ID%EF%BC%88Bridge-ID-BID"><span class="toc-number">3.1.1.</span> <span class="toc-text">桥ID（Bridge ID,BID)</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%A0%B9%E6%A1%A5-Root-Bridge"><span class="toc-number">3.1.2.</span> <span class="toc-text">根桥(Root Bridge)</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Cost"><span class="toc-number">3.1.3.</span> <span class="toc-text">Cost</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%B7%9F%E8%B7%AF%E5%BE%84%E5%BC%80%E9%94%80-RPC"><span class="toc-number">3.1.4.</span> <span class="toc-text">跟路径开销 (RPC)</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%8E%A5%E5%8F%A3ID%EF%BC%88Port-ID%EF%BC%8CPID%EF%BC%89"><span class="toc-number">3.1.5.</span> <span class="toc-text">接口ID（Port ID，PID）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%BD%91%E6%A1%A5%E5%8D%8F%E8%AE%AE%E6%95%B0%E6%8D%AE%E5%8D%95%E5%85%83%EF%BC%88BPDU%EF%BC%89"><span class="toc-number">3.1.6.</span> <span class="toc-text">网桥协议数据单元（BPDU）</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%85%8D%E7%BD%AEBPDU%E7%9A%84%E6%AF%94%E8%BE%83%E5%8E%9F%E5%88%99"><span class="toc-number">3.2.</span> <span class="toc-text">配置BPDU的比较原则</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#STP%E7%9A%84%E8%AE%A1%E7%AE%97%E8%BF%87%E7%A8%8B"><span class="toc-number">3.3.</span> <span class="toc-text">STP的计算过程</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%80%89%E4%B8%BE%E6%A0%B9%E6%A1%A5"><span class="toc-number">3.3.1.</span> <span class="toc-text">选举根桥</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%9C%A8%E6%AF%8F%E5%8F%B0%E9%9D%9E%E6%A0%B9%E6%A1%A5%E4%B8%8A%E9%80%89%E4%B8%BE%E4%B8%80%E4%B8%AA%E6%A0%B9%E6%8E%A5%E5%8F%A3"><span class="toc-number">3.3.2.</span> <span class="toc-text">在每台非根桥上选举一个根接口</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%9C%A8%E6%AF%8F%E6%9D%A1%E9%93%BE%E8%B7%AF%E4%B8%8A%E9%80%89%E4%B8%BE%E4%B8%80%E4%B8%AA%E6%8C%87%E5%AE%9A%E6%8E%A5%E5%8F%A3"><span class="toc-number">3.3.3.</span> <span class="toc-text">在每条链路上选举一个指定接口</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%9D%9E%E6%8C%87%E5%AE%9A%E6%8E%A5%E5%8F%A3%E8%A2%AB%E9%98%BB%E5%A1%9E"><span class="toc-number">3.3.4.</span> <span class="toc-text">非指定接口被阻塞</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%A4%BA%E4%BE%8B"><span class="toc-number">3.4.</span> <span class="toc-text">示例</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%80%BB%E7%BB%93"><span class="toc-number">3.5.</span> <span class="toc-text">总结</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link"><span class="toc-number">4.</span> <span class="toc-text">STP信息查看</span></a></li><li class="toc-item toc-level-1"><a class="toc-link"><span class="toc-number">5.</span> <span class="toc-text">STP的接口状态</span></a></li><li class="toc-item toc-level-1"><a class="toc-link"><span class="toc-number">6.</span> <span class="toc-text">STP的接口状态迁移</span></a></li><li class="toc-item toc-level-1"><a class="toc-link"><span class="toc-number">7.</span> <span class="toc-text">故障</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%8B%93%E6%89%91%E5%8F%98%E5%8C%96-%E6%A0%B9%E6%A1%A5%E6%95%85%E9%9A%9C"><span class="toc-number">7.1.</span> <span class="toc-text">拓扑变化 - 根桥故障</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%8B%93%E6%89%91%E5%8F%98%E5%8C%96-%E7%9B%B4%E8%BF%9E%E9%93%BE%E8%B7%AF%E6%95%85%E9%9A%9C"><span class="toc-number">7.2.</span> <span class="toc-text">拓扑变化 - 直连链路故障</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%8B%93%E6%89%91%E5%8F%98%E5%8C%96-%E9%9D%9E%E7%9B%B4%E8%BF%9E%E9%93%BE%E8%B7%AF%E6%95%85%E9%9A%9C"><span class="toc-number">7.3.</span> <span class="toc-text">拓扑变化 - 非直连链路故障</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%8B%93%E6%89%91%E6%94%B9%E5%8F%98%E5%AF%BC%E8%87%B4MAC%E5%9C%B0%E5%9D%80%E8%A1%A8%E9%94%99%E8%AF%AF"><span class="toc-number">7.4.</span> <span class="toc-text">拓扑改变导致MAC地址表错误</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link"><span class="toc-number">8.</span> <span class="toc-text">STP配置命令</span></a></li><li class="toc-item toc-level-1"><a class="toc-link"><span class="toc-number">9.</span> <span class="toc-text">STP缺点</span></a></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/2025/11/30/butterfly%E4%B8%BB%E9%A2%98%E6%96%87%E7%AB%A0%E9%A1%B5%E9%85%8D%E7%BD%AE%20copy/" title="butterfly主题文章页配置"><img src="https://wyh.serv00.net/view.php/3b0b5c281d2d84d4f65931de36a39da1.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="butterfly主题文章页配置"/></a><div class="content"><a class="title" href="/2025/11/30/butterfly%E4%B8%BB%E9%A2%98%E6%96%87%E7%AB%A0%E9%A1%B5%E9%85%8D%E7%BD%AE%20copy/" title="butterfly主题文章页配置">butterfly主题文章页配置</a><time datetime="2025-11-30T09:40:00.000Z" title="发表于 2025-11-30 17:40:00">2025-11-30</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2025/11/29/%E7%94%9F%E6%88%90%E6%A0%91%E5%8D%8F%E8%AE%AE%EF%BC%88STP%EF%BC%89/" title="生成树协议（STP）"><img src="https://wyh.serv00.net/view.php/ab9ef0aebc8423a8d32ba835c724cfdf.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="生成树协议（STP）"/></a><div class="content"><a class="title" href="/2025/11/29/%E7%94%9F%E6%88%90%E6%A0%91%E5%8D%8F%E8%AE%AE%EF%BC%88STP%EF%BC%89/" title="生成树协议（STP）">生成树协议（STP）</a><time datetime="2025-11-29T03:29:00.000Z" title="发表于 2025-11-29 11:29:00">2025-11-29</time></div></div></div></div></div></div></main><footer id="footer"><div class="footer-other"><div class="footer-copyright"><span class="copyright">&copy;&nbsp;2025 By Joysuff</span><span class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo 8.1.1</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly 5.5.2</a></span></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><a id="to_comment" href="#post-comment" title="前往评论"><i class="fas fa-comments"></i></a><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js?v=5.5.2"></script><script src="/js/main.js?v=5.5.2"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui@6.1.4/dist/fancybox/fancybox.umd.min.js"></script><div class="js-pjax"><script>(async () => {
+  const showKatex = () => {
+    document.querySelectorAll('#article-container .katex').forEach(el => el.classList.add('katex-show'))
+  }
+
+  if (!window.katex_js_css) {
+    window.katex_js_css = true
+    await btf.getCSS('https://cdn.jsdelivr.net/npm/katex@0.16.25/dist/katex.min.css')
+    if (true) {
+      await btf.getScript('https://cdn.jsdelivr.net/npm/katex@0.16.25/dist/contrib/copy-tex.min.js')
+    }
+  }
+
+  showKatex()
+})()</script><script>(() => {
+  let initFn = window.walineFn || null
+  const isShuoshuo = GLOBAL_CONFIG_SITE.pageType === 'shuoshuo'
+  const option = null
+
+  const destroyWaline = ele => ele.destroy()
+
+  const initWaline = (Fn, el = document, path = window.location.pathname) => {
+    const waline = Fn({
+      el: el.querySelector('#waline-wrap'),
+      serverURL: 'https://comment.768451.xyz',
+      pageview: true,
+      dark: 'html[data-theme="dark"]',
+      comment: true,
+      ...option,
+      path: isShuoshuo ? path : (option && option.path) || path
+    })
+
+    if (isShuoshuo) {
+      window.shuoshuoComment.destroyWaline = () => {
+        destroyWaline(waline)
+        if (el.children.length) {
+          el.innerHTML = ''
+          el.classList.add('no-comment')
+        }
+      }
+    }
+  }
+
+  const loadWaline = (el, path) => {
+    if (initFn) initWaline(initFn, el, path)
+    else {
+      btf.getCSS('https://cdn.jsdelivr.net/npm/@waline/client@3.7.1/dist/waline.min.css')
+        .then(() => import('https://cdn.jsdelivr.net/npm/@waline/client@3.7.1/dist/waline.min.js'))
+        .then(({ init }) => {
+          initFn = init || Waline.init
+          initWaline(initFn, el, path)
+          window.walineFn = initFn
+        })
+    }
+  }
+
+  if (isShuoshuo) {
+    'Waline' === 'Waline'
+      ? window.shuoshuoComment = { loadComment: loadWaline } 
+      : window.loadOtherComment = loadWaline
+    return
+  }
+
+  if ('Waline' === 'Waline' || !false) {
+    if (false) btf.loadComment(document.getElementById('waline-wrap'),loadWaline)
+    else setTimeout(loadWaline, 0)
+  } else {
+    window.loadOtherComment = loadWaline
+  }
+})()</script></div><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/dist/activate-power-mode.min.js"></script><script>POWERMODE.colorful = true;
+POWERMODE.shake = false;
+POWERMODE.mobile = false;
+document.body.addEventListener('input', POWERMODE);
+</script><script id="click-heart" src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/dist/click-heart.min.js" async="async" mobile="false"></script></div></body></html>

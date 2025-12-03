@@ -1,0 +1,341 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>以太网链路聚合原理 | Blog</title><meta name="author" content="Joysuff"><meta name="copyright" content="Joysuff"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="ffffff"><meta name="description" content="随着业务的发展和园区网络规模的不断扩大，用户对于网络的带宽、可靠性要求越来越高。传统解决方案通过升级设备方式提高网络带宽，同时通过部署冗余链路并辅以STP（Spanning Tree Protocol，生成树协议）协议实现高可靠。传统解决方案存在灵活度低、故障恢复时间长、配置复杂等缺点。 网络可靠性 网络的可靠性指当设备或者链路出现单点或者多点故障时保证网络服务不间断的能力。 网络的可靠性可以从单">
+<meta property="og:type" content="article">
+<meta property="og:title" content="以太网链路聚合原理">
+<meta property="og:url" content="https://joysuff.github.io/2025/12/02/%E4%BB%A5%E5%A4%AA%E7%BD%91%E9%93%BE%E8%B7%AF%E8%81%9A%E5%90%88/index.html">
+<meta property="og:site_name" content="Blog">
+<meta property="og:description" content="随着业务的发展和园区网络规模的不断扩大，用户对于网络的带宽、可靠性要求越来越高。传统解决方案通过升级设备方式提高网络带宽，同时通过部署冗余链路并辅以STP（Spanning Tree Protocol，生成树协议）协议实现高可靠。传统解决方案存在灵活度低、故障恢复时间长、配置复杂等缺点。 网络可靠性 网络的可靠性指当设备或者链路出现单点或者多点故障时保证网络服务不间断的能力。 网络的可靠性可以从单">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://wyh.serv00.net/view.php/0886a41897760446ce936d15c134512b.webp">
+<meta property="article:published_time" content="2025-12-01T16:00:00.000Z">
+<meta property="article:modified_time" content="2025-12-02T16:00:00.000Z">
+<meta property="article:author" content="Joysuff">
+<meta property="article:tag" content="网络基础">
+<meta property="article:tag" content="链路聚合">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://wyh.serv00.net/view.php/0886a41897760446ce936d15c134512b.webp"><script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "以太网链路聚合原理",
+  "url": "https://joysuff.github.io/2025/12/02/%E4%BB%A5%E5%A4%AA%E7%BD%91%E9%93%BE%E8%B7%AF%E8%81%9A%E5%90%88/",
+  "image": "https://wyh.serv00.net/view.php/0886a41897760446ce936d15c134512b.webp",
+  "datePublished": "2025-12-01T16:00:00.000Z",
+  "dateModified": "2025-12-02T16:00:00.000Z",
+  "author": [
+    {
+      "@type": "Person",
+      "name": "Joysuff",
+      "url": "https://joysuff.github.io"
+    }
+  ]
+}</script><link rel="shortcut icon" href="/img/favicon.png"><link rel="canonical" href="https://joysuff.github.io/2025/12/02/%E4%BB%A5%E5%A4%AA%E7%BD%91%E9%93%BE%E8%B7%AF%E8%81%9A%E5%90%88/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="stylesheet" href="/css/index.css?v=5.5.2"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.1.0/css/all.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui@6.1.4/dist/fancybox/fancybox.min.css" media="print" onload="this.media='all'"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!false && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', 'ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          theme === 'dark' ? activateDarkMode() : theme === 'light' ? activateLightMode() : null
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":250,"highlightFullpage":false,"highlightMacStyle":true},
+  copy: {
+    success: '复制成功',
+    error: '复制失败',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '天',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'fancybox',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid@4.12.0/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: false,
+  islazyloadPlugin: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: true,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: '以太网链路聚合原理',
+  isHighlightShrink: false,
+  isToc: true,
+  pageType: 'post'
+}</script><meta name="generator" content="Hexo 8.1.1"></head><body><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src="/img/joy.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="site-data text-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">8</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">10</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">2</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 主页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/shuoshuo/"><i class="fa-fw fa-solid fa-comment"></i><span> 说说</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url(https://wyh.serv00.net/view.php/0886a41897760446ce936d15c134512b.webp);"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><span class="site-name">Blog</span></a><a class="nav-page-title" href="/"><span class="site-name">以太网链路聚合原理</span><span class="site-name"><i class="fa-solid fa-circle-arrow-left"></i><span>  返回首页</span></span></a></span><div id="menus"><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 主页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/shuoshuo/"><i class="fa-fw fa-solid fa-comment"></i><span> 说说</span></a></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav><div id="post-info"><h1 class="post-title">以太网链路聚合原理</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2025-12-01T16:00:00.000Z" title="发表于 2025-12-02 00:00:00">2025-12-02</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2025-12-02T16:00:00.000Z" title="更新于 2025-12-03 00:00:00">2025-12-03</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%E7%BD%91%E7%BB%9C%E5%9F%BA%E7%A1%80/">网络基础</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-wordcount"><i class="far fa-file-word fa-fw post-meta-icon"></i><span class="post-meta-label">总字数:</span><span class="word-count">3k</span><span class="post-meta-separator">|</span><i class="far fa-clock fa-fw post-meta-icon"></i><span class="post-meta-label">阅读时长:</span><span>9分钟</span></span><span class="post-meta-separator">|</span><span id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">浏览量:</span><span class="waline-pageview-count" data-path="/2025/12/02/%E4%BB%A5%E5%A4%AA%E7%BD%91%E9%93%BE%E8%B7%AF%E8%81%9A%E5%90%88/"><i class="fa-solid fa-spinner fa-spin"></i></span></span><span class="post-meta-separator">|</span><span class="post-meta-commentcount"><i class="far fa-comments fa-fw post-meta-icon"></i><span class="post-meta-label">评论数:</span><a href="/2025/12/02/%E4%BB%A5%E5%A4%AA%E7%BD%91%E9%93%BE%E8%B7%AF%E8%81%9A%E5%90%88/#post-comment"><span class="waline-comment-count" data-path="/2025/12/02/%E4%BB%A5%E5%A4%AA%E7%BD%91%E9%93%BE%E8%B7%AF%E8%81%9A%E5%90%88/"><i class="fa-solid fa-spinner fa-spin"></i></span></a></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><div id="post-outdate-notice" data="{&quot;limitDay&quot;:365,&quot;messagePrev&quot;:&quot;It has been&quot;,&quot;messageNext&quot;:&quot;days since the last update, the content of the article may be outdated.&quot;,&quot;postUpdate&quot;:&quot;2025-12-03 00:00:00&quot;}" hidden></div><p>随着业务的发展和园区网络规模的不断扩大，用户对于网络的带宽、可靠性要求越来越高。传统解决方案通过升级设备方式提高网络带宽，同时通过部署冗余链路并辅以STP（Spanning Tree Protocol，生成树协议）协议实现高可靠。传统解决方案存在灵活度低、故障恢复时间长、配置复杂等缺点。</p>
+<h1>网络可靠性</h1>
+<p>网络的可靠性指当设备或者链路出现单点或者多点故障时保证网络服务不间断的能力。</p>
+<p>网络的可靠性可以从单板、设备、链路多个层面实现。</p>
+<p>单条链路的带宽无法满足整个园区的流量需求时，如果更换高带宽接口板则会增加维护设备成本；如果增加链路则需要分配IP地址，造成地址浪费。单条链路组网时，如果链路发生故障，则会影响整个区域人员的通信与办公。</p>
+<h2 id="单板可靠性">单板可靠性</h2>
+<p><img src="/access/Pasted%20image%2020251203091847.png" alt=""></p>
+<p>框式交换机由机框、电源模块、风扇模块、主控板、交换网板（SFU）、线路板（LPU）构成。</p>
+<ul>
+<li>机框：为各种板卡、模块提供插槽，实现板卡间的通信。</li>
+<li>主控板（MPU，Main Processing Unit）：负责整个系统的控制平面和管理平面。</li>
+<li>交换网板（SFU，Switch Fabric Unit）：负责整个系统的数据平面。数据平面提供高速无阻塞数据通道，实现各个业务模块之间的业务交换功能。</li>
+<li>线路板（LPU，Line Processing Unit）：线路处理单元是物理设备上用于提供数据转发功能的模块，提供不同速率的光口、电口。</li>
+</ul>
+<blockquote>
+<p><strong>单块主控板故障</strong>不影响设备的控制平台正常工作<br>
+<strong>部分交换网板故障</strong>数据平面依旧正常转发数据<br>
+<strong>线路板故障</strong>，该板卡上接口会受到影响</p>
+</blockquote>
+<h2 id="设备可靠性">设备可靠性</h2>
+<p><img src="/access/Pasted%20image%2020251203092336.png" alt=""></p>
+<h2 id="链路可靠性">链路可靠性</h2>
+<p>为保证设备间链路可靠性，在设备间部署多条物理线路，为防止环路STP只保留一条链路转发流量，其余链路成为备份链路。</p>
+<h1>链路聚合技术</h1>
+<p>设备之间存在多条链路时，由于STP的存在，实际只会有一条链路转发流量，设备间链路带宽无法得到提升。</p>
+<p><strong>以太网链路聚合Eth-Trunk</strong>：简称链路聚合，通过将多个物理接口捆绑成为一个逻辑接口，可以在不进行硬件升级的条件下，达到增加链路带宽的目的。</p>
+<p>聚合的优点</p>
+<ul>
+<li>增加设备之间的互联带宽</li>
+<li>提高设备之间的可靠性</li>
+<li>对流量负载分担，提高链路的利用率</li>
+</ul>
+<h2 id="链路聚合基本术语">链路聚合基本术语</h2>
+<p><strong>聚合组</strong>（Link Aggregation Group，LAG）：若干条链路捆绑在一起所形成的的逻辑链路。每个聚合组唯一对应着一个逻辑接口，这个逻辑接口又被称为链路聚合接口或Eth-Trunk接口。</p>
+<blockquote>
+<p>一个聚合组内要求成员接口以下参数相同：</p>
+<ul>
+<li>接口速率</li>
+<li>双工模式</li>
+<li>VLAN配置：接口类型都是Trunk或者Access，如果为Access接口的default VLAN需要一致，如果为Trunk接口，接口放通的VLAN、缺省VLAN需要一致。</li>
+</ul>
+</blockquote>
+<p><strong>成员接口和成员链路</strong>：组成Eth-Trunk接口的各个物理接口称为成员接口。成员接口对应的链路称为成员链路。</p>
+<p><strong>活动接口和活动链路</strong>：活动接口又叫选中（Selected）接口，是参与数据转发的成员接口。活动接口对应的链路被称为活动链路（Active link）</p>
+<p><strong>非活动接口和非活动链路</strong>：又叫非选中（Unselected）接口，是不参与转发数据的成员接口。非活动接口对应的链路被称为非活动链路（Inactive link）。</p>
+<blockquote>
+<p>LACP通过LACPDU中的三个flags来标识该端口的状态，如果是活跃端口如下三个flags的值将会是1：</p>
+<ul>
+<li>Synchronization</li>
+<li>Collecting</li>
+<li>Distributing<br>
+如果是非活跃端口，该三个flags字段的值将为0。</li>
+</ul>
+</blockquote>
+<p><strong>聚合模式</strong> ：根据是否开启LACP（Link Aggregation Control Protocol，链路聚合控制协议），链路聚合可以分为<strong>手工模式</strong>和<strong>LACP模式</strong>（LACP又分为静态和动态两个）。</p>
+<p><strong>最大活动接口数目</strong>：当成员接口数目超过最大活动接口数目时会通过比较接口优先级、接口号选举出较优的接口成为活动接口，其余的则成为备份端口（非活动接口），同时对应的链路分别成为活动链路、非活动链路。交换机只会从活动接口中发送、接收报文。当活动链路中出现链路故障时，可以从非活动链路中找出一条优先级最高（接口优先级、接口编号比较）的链路替换故障链路，实现总体带宽不发生变化、业务的不间断转发。</p>
+<h2 id="手工模式">手工模式</h2>
+<p>Eth-Trunk的建立、成员接口的加入均由手动配置，双方系统之间不使用LACP进行协商。</p>
+<p>正常情况下所有链路都是活动链路，该模式下所有活动链路都参与数据的转发，平均分担流量，如果某条活动链路故障，链路聚合组自动在剩余的活动链路中平均分担流量。</p>
+<p>当聚合的两端设备中存在一个不支持LACP协议时，可以使用手工模式。</p>
+<p><strong>手工模式缺陷</strong></p>
+<p>必须保证本端链路聚合接口中所有成员接口的对端接口：属于同一设备、加入同一链路聚合接口。</p>
+<p>手工模式下，设备间没有报文交互，因此只能通过管理员人工确认。</p>
+<p>手动模式下，设备只能通过物理层状态判断对端接口是否正常工作。</p>
+<h2 id="LACP模式">LACP模式</h2>
+<p>LACP模式也称为M:N模式，其中M条链路处于活动状态转发数据，N条链路处于非活动状态作为备份链路。</p>
+<p>采用LACP协议的一种链路聚合模式。设备间通过链路聚合控制协议数据单元（Link Aggregation Control Protocol Data Unit，LACPDU）进行交互，通过协议协商确保对端是同一台设备、同一个聚合接口的成员接口。LACPDU报文中包含设备优先级、MAC地址、接口优先级、接口号等。</p>
+<p><strong>系统优先级</strong><br>
+LACP模式下，两端设备所选择的<strong>活动接口数目必须保持一致</strong>，否则链路聚合组就无法建立。此时可以使其中一端成为<strong>主动端</strong>，另一端（<strong>被动端</strong>）根据主动端选择活动接口。</p>
+<blockquote>
+<p>通过系统LACP优先级确定主动端，值越小优先级越高。<br>
+系统LACP优先级默认32768，越小越优，通常保持默认。当优先级一致时LACP会通过比较MAC地址选择主动端，MAC地址越小越优。</p>
+</blockquote>
+<p><strong>接口优先级</strong><br>
+选出主动端后，两端都会以主动端的接口优先级来选择<strong>活动接口</strong>，优先级高的接口将优先被选为活动接口。接口LACP优先级值越小，优先级越高。</p>
+<blockquote>
+<p>接口LACP优先级默认为32768，越小越优，通常保持默认，当优先级一致时LACP会通过接口编号选择活动接口，越小越优。</p>
+</blockquote>
+<p><strong>LACP抢占机制</strong></p>
+<p><img src="/access/Pasted%20image%2020251203094427.png" alt=""></p>
+<h2 id="负载分担">负载分担</h2>
+<p><strong>基于包的负载分担</strong></p>
+<p>在使用Eth-Trunk转发数据时，由于聚合组两端设备之间有多条物理链路，如果每个数据帧在不同的链路上转发，则有可能导致数据帧到达对端时间不一致，从而引起数据乱序。</p>
+<p><strong>基于流的负载分担</strong></p>
+<p>Eth-Trunk推荐采用<strong>逐流负载分担</strong>的方式，即一条相同的流负载到一条链路，这样既保证了同一数据流的数据帧在同一条物理链路转发，又实现了流量在聚合组内各物理链路上的负载分担。</p>
+<p><strong>负载分担模式</strong></p>
+<p>Eth-trunk支持基于报文的IP地址或MAC地址来进行负载分担，可以配置不同的模式（本地有效，对出方向报文生效）将数据流分担到不同的成员接口上。</p>
+<p>常见的模式有：源IP、源MAC、目的IP、目的MAC、源目IP、源目MAC。</p>
+<p>实际业务中用户需要根据业务流量特征选择配置合适的负载分担方式。业务流量中某种参数变化越频繁，选择与此参数相关的负载分担方式就越容易实现负载均衡。</p>
+<ul>
+<li>如果报文的IP地址变化较频繁，那么选择基于源IP、目的IP或者源目IP的负载分担模式更有利于流量在各物理链路间合理的负载分担；</li>
+<li>如果报文的MAC地址变化较频繁，IP地址比较固定，那么选择基于源MAC、目的MAC或源目MAC的负载分担模式更有利于流量在各物理链路间合理的负载分担。</li>
+<li>如果负载分担模式选择的和实际业务特征不相符，可能会导致流量分担不均，部分成员链路负载很高，其余的成员链路却很空闲，如在报文源目IP变化频繁但是源目MAC固定的场景下选择源目MAC模式，那将会导致所有流量都分担在一条成员链路上。</li>
+</ul>
+<h2 id="使用场景">使用场景</h2>
+<p><strong>交换机和交换机之间</strong>：为保证交换机之间的链路带宽以及可靠性，可以在交换机之间部署多条物理链路并使用Eth-Trunk。</p>
+<p><strong>交换机与服务器之间</strong>：为了提高服务器的接入带宽和可靠性，将两个或者更多的物理网卡聚合成一个网卡组，与交换机建立链路聚合。</p>
+<p><strong>交换机与堆叠系统</strong>：堆叠系统使得两台交换机成为一台逻辑上的设备，交换机与堆叠系统通过链路聚合互联可以组建高可靠、无环的网络。</p>
+<p><strong>防火墙双机热备心跳线</strong>：防火墙双机热备组网中使用心跳线来检测对端设备的状态，为防止单端口、单链路故障导致的状态监测错误可以部署Eth-Trunk，使用Eth-Trunk作为检测状态的心跳线。</p>
+<h2 id="配置命令">配置命令</h2>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 创建链路聚合组</span></span><br><span class="line">[Huawei] interface eth-trunk trunk-id</span><br><span class="line"><span class="comment"># 配置链路聚合模式（mode manual load-balance为手工模式）</span></span><br><span class="line">[Huawei-Eth-Trunk1] mode &#123;lacp | manual load-balance &#125;</span><br><span class="line"><span class="comment"># 接口加入链路聚合组</span></span><br><span class="line"><span class="comment">## 接口视图</span></span><br><span class="line">[Huawei-GigabitEthernet0/0/1] eth-trunk trunk-id</span><br><span class="line"><span class="comment">## Eth-Trunk视图</span></span><br><span class="line">[Huawei-Eth-Trunk1] trunkport interface-type &#123;interface-number&#125;</span><br><span class="line"><span class="comment"># 修改接口优先级</span></span><br><span class="line">[Huawei-GigabitEthernet0/0/3]lacp priority 1000</span><br><span class="line"><span class="comment"># 开启抢占功能（两端都需开启）</span></span><br><span class="line">[Huawei-Eth-Trunk1]lacp preempt <span class="built_in">enable</span></span><br><span class="line"><span class="comment"># 配置抢占时间（默认30s，最小10s）</span></span><br><span class="line">[Huawei-Eth-Trunk1]lacp preempt delay 10</span><br><span class="line"><span class="comment"># 修改设备优先级</span></span><br><span class="line">[Huawei]lacp priority 1000</span><br><span class="line"><span class="comment"># 允许不同速率端口加入同一Eth-Trunk接口</span></span><br><span class="line">[Huawei-Eth-Trunk1] mixed-rate <span class="built_in">link</span> <span class="built_in">enable</span></span><br><span class="line"><span class="comment"># 配置最大活动接口数</span></span><br><span class="line">[Huawei-Eth-Trunk1] max active-linknumber &#123;number&#125;</span><br><span class="line"><span class="comment"># 配置最小活动接口数</span></span><br><span class="line">[Huawei-Eth-Trunk1] least active-linknumber &#123;number&#125;</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>本端和对端设备的活动接口数下限阈值可以不同，手动模式、LACP模式都支持配置最小活动接口数。<br>
+配置最小活动接口数目的是为了保证最小带宽，当前活动链路数目小于下限阈值时，Eth-Trunk接口的状态转为Down。</p>
+</blockquote>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a href="https://joysuff.github.io">Joysuff</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="https://joysuff.github.io/2025/12/02/%E4%BB%A5%E5%A4%AA%E7%BD%91%E9%93%BE%E8%B7%AF%E8%81%9A%E5%90%88/">https://joysuff.github.io/2025/12/02/以太网链路聚合/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来源 <a href="https://joysuff.github.io" target="_blank">Blog</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/%E9%93%BE%E8%B7%AF%E8%81%9A%E5%90%88/">链路聚合</a><a class="post-meta__tags" href="/tags/%E7%BD%91%E7%BB%9C%E5%9F%BA%E7%A1%80/">网络基础</a></div><div class="post-share"><div class="social-share" data-image="https://wyh.serv00.net/view.php/0886a41897760446ce936d15c134512b.webp" data-sites="facebook,x,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related" href="/2025/12/03/%E5%A0%86%E5%8F%A0%E5%92%8C%E9%9B%86%E7%BE%A4/" title="堆叠和集群"><img class="cover" src="https://wyh.serv00.net/view.php/3dd8805a61274860df648f35514c9ed7.webp" onerror="onerror=null;src='/img/404.jpg'" alt="cover of previous post"><div class="info"><div class="info-1"><div class="info-item-1">上一篇</div><div class="info-item-2">堆叠和集群</div></div><div class="info-2"><div class="info-item-1">背景 随着企业的发展，企业网络的规模越来越大，这对企业网络提出了更高的要求：更高的可靠性、更低的故障恢复时间、设备更加易于管理等。 传统的园区网高可靠性技术出现故障时切换时间很难做到毫秒级别、实现可靠性的方案通常为一主一备，存在着严重的资源浪费。同时随着网络设备的越来越多，管理将会变得越加复杂。为构建可靠、易管理、资源利用率高、易于扩展的交换网络，引入了交换机堆叠、集群技术。 堆叠(iSta...</div></div></div></a><a class="pagination-related" href="/2025/12/02/%E4%BA%A4%E6%8D%A2%E6%9C%BA%E9%AB%98%E7%BA%A7%E7%89%B9%E6%80%A7/" title="交换机高级特性"><img class="cover" src="https://wyh.serv00.net/view.php/c184b31baa03559a103298929e7239a6.webp" onerror="onerror=null;src='/img/404.jpg'" alt="cover of next post"><div class="info text-right"><div class="info-1"><div class="info-item-1">下一篇</div><div class="info-item-2">交换机高级特性</div></div><div class="info-2"><div class="info-item-1">MUX VLAN（Multiplex VLAN）提供了一种通过VLAN进行网络资源控制的机制。通过MUX VLAN提供的二层流量隔离的机制可以实现企业内部员工之间互相通信，而企业外来访客之间的互访是隔离的。 为了实现报文之间的二层隔离，用户可以将不同的端口加入不同的VLAN，但这样会浪费有限的VLAN资源。采用端口隔离功能，可以实现同一VLAN内端口之间的隔离。端口隔离功能为用户提供了更安全...</div></div></div></a></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相关推荐</span></div><div class="relatedPosts-list"><a class="pagination-related" href="/2025/12/01/%E7%94%9F%E6%88%90%E6%A0%91/%E5%A4%9A%E7%94%9F%E6%88%90%E6%A0%91%E5%8D%8F%E8%AE%AE(MSTP)/" title="多生成树协议(MSTP)"><img class="cover" src="https://wyh.serv00.net/view.php/8e77a3235b2ffa9ccc1630318bc31451.webp" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2025-12-01</div><div class="info-item-2">多生成树协议(MSTP)</div></div><div class="info-2"><div class="info-item-1">RSTP在STP基础上进行了改进，实现了网络拓扑快速收敛。但在划分VLAN的网络中运行RSTP/STP，局域网内所有的VLAN共享一棵生成树，被阻塞后的链路将不承载任何流量，无法在VLAN间实现数据流量的负载均衡，导致链路带宽利用率、设备资源利用率较低。 MSTP基本概念 为了弥补RSTP/STP的缺陷，IEEE于2002年发布的802.1S标准定义了MSTP（Multiple Spanni...</div></div></div></a><a class="pagination-related" href="/2025/11/29/%E7%94%9F%E6%88%90%E6%A0%91/%E5%BF%AB%E9%80%9F%E7%94%9F%E6%88%90%E6%A0%91%EF%BC%88RSTP%EF%BC%89/" title="快速生成树(RSTP)"><img class="cover" src="https://wyh.serv00.net/view.php/0886a41897760446ce936d15c134512b.webp" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2025-11-29</div><div class="info-item-2">快速生成树(RSTP)</div></div><div class="info-2"><div class="info-item-1">概述 IEEE 802.1w中定义的RSTP可以视为STP的改进版本，RSTP在许多方面对STP进行了优化，它的收敛速度更快，而且能够兼容STP。 RSTP引入了新的接口角色，其中替代接口的引入使得交换机在根接口失效时，能够立即获得新的路径到达根桥。备份端口作为指定端口的备份，帮助链路上的网桥快速获得到根桥的备份路径。RSTP的状态规范根据端口是否转发用户流量和学习MAC地址把原来的5种状态...</div></div></div></a><a class="pagination-related" href="/2025/11/29/%E7%94%9F%E6%88%90%E6%A0%91/%E7%94%9F%E6%88%90%E6%A0%91%E5%8D%8F%E8%AE%AE(STP)/" title="生成树协议（STP）"><img class="cover" src="https://wyh.serv00.net/view.php/3a4d41838eefbc50d8348e2dba9a8e53.webp" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2025-11-29</div><div class="info-item-2">生成树协议（STP）</div></div><div class="info-2"><div class="info-item-1">以太网交换网络中为了进行链路备份，提高网络可靠性，通常会使用冗余链路。但是使用冗余链路会在交换网络上产生环路，引发广播风暴以及MAC地址表不稳定等故障现象从而导致用户通信质量较差，甚至通信中断。为解决交换网络中的环路问题，提出了生成树协议STP(SpanningTree Protocol)。 运行STP协议的设备通过彼此交互信息发现网络中的环路，并有选择的对某个接口进行阻塞，最终将环形网络结...</div></div></div></a></div></div><hr class="custom-hr"/><div id="post-comment"><div class="comment-head"><div class="comment-headline"><i class="fas fa-comments fa-fw"></i><span> 评论</span></div></div><div class="comment-wrap"><div><div id="waline-wrap"></div></div></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="/img/joy.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info-name">Joysuff</div><div class="author-info-description"></div><div class="site-data"><a href="/archives/"><div class="headline">文章</div><div class="length-num">8</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">10</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">2</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/joysuff"><i class="fab fa-github"></i><span>Follow Me</span></a><div class="card-info-social-icons"><a class="social-icon" href="https://github.com/joysuff" target="_blank" title="Github"><i class="fab fa-github" style="color: #24292e;"></i></a><a class="social-icon" href="http://monitor.768451.xyz" target="_blank" title="Uptime kuma"><i class="fa-solid fa-server" style="color: #24292e;"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">This is my Blog</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link"><span class="toc-number">1.</span> <span class="toc-text">网络可靠性</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8D%95%E6%9D%BF%E5%8F%AF%E9%9D%A0%E6%80%A7"><span class="toc-number">1.1.</span> <span class="toc-text">单板可靠性</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%AE%BE%E5%A4%87%E5%8F%AF%E9%9D%A0%E6%80%A7"><span class="toc-number">1.2.</span> <span class="toc-text">设备可靠性</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%93%BE%E8%B7%AF%E5%8F%AF%E9%9D%A0%E6%80%A7"><span class="toc-number">1.3.</span> <span class="toc-text">链路可靠性</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link"><span class="toc-number">2.</span> <span class="toc-text">链路聚合技术</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%93%BE%E8%B7%AF%E8%81%9A%E5%90%88%E5%9F%BA%E6%9C%AC%E6%9C%AF%E8%AF%AD"><span class="toc-number">2.1.</span> <span class="toc-text">链路聚合基本术语</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%89%8B%E5%B7%A5%E6%A8%A1%E5%BC%8F"><span class="toc-number">2.2.</span> <span class="toc-text">手工模式</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#LACP%E6%A8%A1%E5%BC%8F"><span class="toc-number">2.3.</span> <span class="toc-text">LACP模式</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%B4%9F%E8%BD%BD%E5%88%86%E6%8B%85"><span class="toc-number">2.4.</span> <span class="toc-text">负载分担</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BD%BF%E7%94%A8%E5%9C%BA%E6%99%AF"><span class="toc-number">2.5.</span> <span class="toc-text">使用场景</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%85%8D%E7%BD%AE%E5%91%BD%E4%BB%A4"><span class="toc-number">2.6.</span> <span class="toc-text">配置命令</span></a></li></ol></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/2025/12/03/%E5%A0%86%E5%8F%A0%E5%92%8C%E9%9B%86%E7%BE%A4/" title="堆叠和集群"><img src="https://wyh.serv00.net/view.php/3dd8805a61274860df648f35514c9ed7.webp" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="堆叠和集群"/></a><div class="content"><a class="title" href="/2025/12/03/%E5%A0%86%E5%8F%A0%E5%92%8C%E9%9B%86%E7%BE%A4/" title="堆叠和集群">堆叠和集群</a><time datetime="2025-12-02T16:00:00.000Z" title="发表于 2025-12-03 00:00:00">2025-12-03</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2025/12/02/%E4%BA%A4%E6%8D%A2%E6%9C%BA%E9%AB%98%E7%BA%A7%E7%89%B9%E6%80%A7/" title="交换机高级特性"><img src="https://wyh.serv00.net/view.php/c184b31baa03559a103298929e7239a6.webp" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="交换机高级特性"/></a><div class="content"><a class="title" href="/2025/12/02/%E4%BA%A4%E6%8D%A2%E6%9C%BA%E9%AB%98%E7%BA%A7%E7%89%B9%E6%80%A7/" title="交换机高级特性">交换机高级特性</a><time datetime="2025-12-01T16:00:00.000Z" title="发表于 2025-12-02 00:00:00">2025-12-02</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2025/12/02/%E4%BB%A5%E5%A4%AA%E7%BD%91%E9%93%BE%E8%B7%AF%E8%81%9A%E5%90%88/" title="以太网链路聚合原理"><img src="https://wyh.serv00.net/view.php/0886a41897760446ce936d15c134512b.webp" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="以太网链路聚合原理"/></a><div class="content"><a class="title" href="/2025/12/02/%E4%BB%A5%E5%A4%AA%E7%BD%91%E9%93%BE%E8%B7%AF%E8%81%9A%E5%90%88/" title="以太网链路聚合原理">以太网链路聚合原理</a><time datetime="2025-12-01T16:00:00.000Z" title="发表于 2025-12-02 00:00:00">2025-12-02</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2025/12/01/VLAN%E5%8E%9F%E7%90%86%E3%80%81%E9%85%8D%E7%BD%AE%E4%B8%8E%E9%80%9A%E4%BF%A1/" title="VLAN配置原理与通信"><img src="https://s3.hi168.com/hi168-19253-2641ocrl/背景图/【哲风壁纸】孤峰-山川-山脉.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="VLAN配置原理与通信"/></a><div class="content"><a class="title" href="/2025/12/01/VLAN%E5%8E%9F%E7%90%86%E3%80%81%E9%85%8D%E7%BD%AE%E4%B8%8E%E9%80%9A%E4%BF%A1/" title="VLAN配置原理与通信">VLAN配置原理与通信</a><time datetime="2025-11-30T16:00:00.000Z" title="发表于 2025-12-01 00:00:00">2025-12-01</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2025/12/01/%E7%94%9F%E6%88%90%E6%A0%91/%E5%A4%9A%E7%94%9F%E6%88%90%E6%A0%91%E5%8D%8F%E8%AE%AE(MSTP)/" title="多生成树协议(MSTP)"><img src="https://wyh.serv00.net/view.php/8e77a3235b2ffa9ccc1630318bc31451.webp" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="多生成树协议(MSTP)"/></a><div class="content"><a class="title" href="/2025/12/01/%E7%94%9F%E6%88%90%E6%A0%91/%E5%A4%9A%E7%94%9F%E6%88%90%E6%A0%91%E5%8D%8F%E8%AE%AE(MSTP)/" title="多生成树协议(MSTP)">多生成树协议(MSTP)</a><time datetime="2025-11-30T16:00:00.000Z" title="发表于 2025-12-01 00:00:00">2025-12-01</time></div></div></div></div></div></div></main><footer id="footer"><div class="footer-other"><div class="footer-copyright"><span class="copyright">&copy;&nbsp;2025 By Joysuff</span><span class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo 8.1.1</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly 5.5.2</a></span></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><a id="to_comment" href="#post-comment" title="前往评论"><i class="fas fa-comments"></i></a><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js?v=5.5.2"></script><script src="/js/main.js?v=5.5.2"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui@6.1.4/dist/fancybox/fancybox.umd.min.js"></script><div class="js-pjax"><script>(async () => {
+  const showKatex = () => {
+    document.querySelectorAll('#article-container .katex').forEach(el => el.classList.add('katex-show'))
+  }
+
+  if (!window.katex_js_css) {
+    window.katex_js_css = true
+    await btf.getCSS('https://cdn.jsdelivr.net/npm/katex@0.16.25/dist/katex.min.css')
+    if (true) {
+      await btf.getScript('https://cdn.jsdelivr.net/npm/katex@0.16.25/dist/contrib/copy-tex.min.js')
+    }
+  }
+
+  showKatex()
+})()</script><script>(() => {
+  let initFn = window.walineFn || null
+  const isShuoshuo = GLOBAL_CONFIG_SITE.pageType === 'shuoshuo'
+  const option = null
+
+  const destroyWaline = ele => ele.destroy()
+
+  const initWaline = (Fn, el = document, path = window.location.pathname) => {
+    const waline = Fn({
+      el: el.querySelector('#waline-wrap'),
+      serverURL: 'https://comment.768451.xyz',
+      pageview: true,
+      dark: 'html[data-theme="dark"]',
+      comment: true,
+      ...option,
+      path: isShuoshuo ? path : (option && option.path) || path
+    })
+
+    if (isShuoshuo) {
+      window.shuoshuoComment.destroyWaline = () => {
+        destroyWaline(waline)
+        if (el.children.length) {
+          el.innerHTML = ''
+          el.classList.add('no-comment')
+        }
+      }
+    }
+  }
+
+  const loadWaline = (el, path) => {
+    if (initFn) initWaline(initFn, el, path)
+    else {
+      btf.getCSS('https://cdn.jsdelivr.net/npm/@waline/client@3.7.1/dist/waline.min.css')
+        .then(() => import('https://cdn.jsdelivr.net/npm/@waline/client@3.7.1/dist/waline.min.js'))
+        .then(({ init }) => {
+          initFn = init || Waline.init
+          initWaline(initFn, el, path)
+          window.walineFn = initFn
+        })
+    }
+  }
+
+  if (isShuoshuo) {
+    'Waline' === 'Waline'
+      ? window.shuoshuoComment = { loadComment: loadWaline } 
+      : window.loadOtherComment = loadWaline
+    return
+  }
+
+  if ('Waline' === 'Waline' || !false) {
+    if (false) btf.loadComment(document.getElementById('waline-wrap'),loadWaline)
+    else setTimeout(loadWaline, 0)
+  } else {
+    window.loadOtherComment = loadWaline
+  }
+})()</script></div><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/dist/activate-power-mode.min.js"></script><script>POWERMODE.colorful = true;
+POWERMODE.shake = false;
+POWERMODE.mobile = false;
+document.body.addEventListener('input', POWERMODE);
+</script><script id="click-heart" src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/dist/click-heart.min.js" async="async" mobile="false"></script><script async data-pjax src="https://cdn.768451.xyz/js/busuanzi.pure.mini.js"></script></div></body></html>
